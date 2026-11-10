@@ -1,0 +1,648 @@
+@font-face {
+    font-family: "Rblxdoorsnewfont";
+    src: url("assets/fonts/Rblxdoorsnewfont-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0d0d0d;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.app {
+    width: 1100px;
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+header {
+    margin-bottom: 35px;
+}
+
+header h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #888;
+    font-size: 16px;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* SETTINGS */
+
+.settings {
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.settings h2,
+.preview-section h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.setting {
+    margin-bottom: 22px;
+}
+
+.setting label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ddd;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    padding: 11px 12px;
+    font-size: 14px;
+    outline: none;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #777;
+}
+
+textarea {
+    height: 90px;
+    resize: vertical;
+}
+
+input[type="file"] {
+    width: 100%;
+    color: #aaa;
+    font-size: 13px;
+}
+
+/* TYPE BUTTONS */
+
+.type-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.type-button {
+    flex: 1;
+    padding: 10px 5px;
+    background: #0d0d0d;
+    color: #aaa;
+    border: 1px solid #333;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.type-button:hover {
+    border-color: #666;
+    color: white;
+}
+
+.type-button.active {
+    background: #292929;
+    color: white;
+    border-color: #777;
+}
+
+/* EXPORT */
+
+#exportButton {
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+
+    background: white;
+    color: black;
+
+    border: none;
+    border-radius: 7px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+#exportButton:hover {
+    background: #ddd;
+}
+
+/* ================================
+   BADGE PREVIEW
+================================ */
+
+.preview-section {
+    min-width: 0;
+}
+
+.badge-stage {
+    position: relative;
+    width: 100%;
+    height: 183px;
+    overflow: hidden;
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 680px;
+    height: 183px;
+    transform-origin: top left;
+    aspect-ratio: auto;
+    background: #120a08;
+    border: 1px solid #2a1a16;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    gap: 28px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+
+    font-family: var(--badge-font, "Oswald", sans-serif);
+}
+
+
+/* ================================
+   BADGE ICON
+================================ */
+
+.badge-icon {
+    width: 150px;
+    height: 150px;
+
+    flex-shrink: 0;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* OUTER BORDER */
+
+.badge-icon-border {
+    position: absolute;
+
+    inset: 0;
+
+    background: var(--template-border-fill, #d5c3a5);
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+}
+
+
+/* INNER ICON */
+
+.badge-icon-inner {
+    position: absolute;
+
+    inset: 9px;
+
+    background: #1b100d;
+
+    overflow: hidden;
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================
+   SECRET / LEGACY — segmented border
+   ========================================= */
+
+   .badge.type-secret .badge-icon-border,
+   .badge.type-legacy .badge-icon-border {
+       --border-fill: var(--template-border-fill);
+   
+       background: var(--border-fill);
+       /* 10 segments: 20° visible + 16° gap */
+       -webkit-mask: repeating-conic-gradient(
+        from -9deg,
+        #000 0deg 23deg,
+        transparent 23deg 36deg
+    );
+    
+    mask: repeating-conic-gradient(
+        from -9deg,
+        #000 0deg 23deg,
+        transparent 23deg 36deg
+    );
+   
+       clip-path: polygon(
+           64.09% 2.03%,
+           87.79% 17.26%,
+           99.49% 42.88%,
+           95.48% 70.77%,
+           77.03% 92.06%,
+           50% 100%,
+           22.97% 92.06%,
+           4.52% 70.77%,
+           0.51% 42.88%,
+           12.21% 17.26%,
+           35.91% 2.03%
+       );
+   }
+
+.badge-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
+#iconPlaceholder {
+    display: none;
+}
+
+/* ================================
+   BADGE CONTENT
+================================ */
+
+.badge.type-progress .badge-content {
+    padding-top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 150px;
+
+    position: relative;
+
+    flex: 1;
+    min-width: 0;
+}
+
+/* NAME */
+
+.badge-content h3 {
+    font-size: 23.5px;
+
+    line-height: 1;
+
+    margin-bottom: 8px;
+    padding-bottom: 3px;
+
+    font-weight: 900;
+    letter-spacing: -0.5px;
+
+    width: 99%;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    background: var(--template-name-fill, #ff6aa2);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+/* TYPE */
+
+#badgeType {
+    font-size: clamp(12px, 1.4vw, 24px);
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    color: #9f8980;
+
+    margin-bottom: 12px;
+}
+
+.badge.type-secret .badge-content,
+.badge.type-legacy .badge-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.badge.type-secret #badgeType {
+    width: 100%;
+    white-space: nowrap;
+    font-size: 17px;
+}
+
+.badge.type-secret .badge-content h3 {
+    font-size: 32px;
+}
+
+.badge.type-secret #badgeDescription {
+    font-size: clamp(16px, 1.8vw, 30px);
+    overflow-wrap: anywhere;
+}
+
+.badge.type-secret #badgeTask {
+    font-size: clamp(16px, 1.9vw, 31px);
+    margin-top: auto;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-legacy #badgeType {
+    width: 100%;
+    white-space: nowrap;
+    font-size: 15px;
+}
+
+.badge.type-legacy .badge-content h3 {
+    font-size: 32px;
+}
+
+.badge.type-legacy #badgeDescription {
+    font-size: clamp(16px, 1.8vw, 30px);
+    overflow-wrap: anywhere;
+}
+
+.badge.type-legacy #badgeTask {
+    font-size: clamp(16px, 1.9vw, 31px);
+    margin-top: auto;
+    overflow-wrap: anywhere;
+}
+
+/* DESCRIPTION */
+
+#badgeDescription {
+    color: #d7bfb0;
+
+    font-size: clamp(13px, 1.55vw, 27px);
+
+    line-height: 1.15;
+
+    margin-bottom: 10px;
+}
+
+
+/* TASK */
+
+#badgeTask {
+    color: #f1d7be;
+
+    font-size: clamp(13px, 1.6vw, 28px);
+
+    line-height: 1.15;
+
+    font-weight: 600;
+}
+
+/* ================================
+   PROGRESS TYPE
+================================ */
+
+.badge.type-progress #badgeType {
+    display: none;
+}
+
+/* ================================
+   PROGRESS TYPE
+================================ */
+
+.badge.type-progress .badge-content {
+    padding-top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 150px;
+
+    flex: 1;
+    min-width: 0;
+}
+
+
+/* NAME */
+
+/* NAME */
+
+.badge.type-progress .badge-content h3 {
+    align-self: flex-start;
+
+    font-size: 36px;
+
+    width: 100%;
+
+    margin-bottom: 8px;
+}
+
+/* DESCRIPTION */
+
+.badge.type-progress #badgeDescription {
+    font-size: clamp(17px, 2vw, 32px);
+
+    margin: 0;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    white-space: nowrap;
+
+    top: 50%;
+    transform: translateY(-50%);
+    overflow-wrap: anywhere;
+}
+
+
+.badge.type-progress #badgeTask {
+    font-size: clamp(17px, 2vw, 32px);
+
+    margin: 0;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    bottom: 2px;
+    overflow-wrap: anywhere;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 850px) {
+
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    .badge-icon {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+
+.font-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.font-dropdown-button {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 16px;
+}
+
+.font-arrow {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #888;
+}
+
+.font-dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    right: 0;
+    top: calc(100% + 5px);
+
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.font-dropdown-menu.open {
+    display: block;
+}
+
+.font-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    background: #151515;
+}
+
+.font-option:hover {
+    background: #222;
+}
+
+/* Font previews */
+
+.font-preview-oswald {
+    font-family: "Oswald", sans-serif;
+}
+
+.font-preview-arial {
+    font-family: Arial, sans-serif;
+}
+
+.font-preview-verdana {
+    font-family: Verdana, sans-serif;
+}
+
+.font-preview-georgia {
+    font-family: Georgia, serif;
+}
+
+.font-preview-impact {
+    font-family: Impact, sans-serif;
+}
+
+.font-preview-doors {
+    font-family: "Rblxdoorsnewfont", sans-serif;
+}
+
+
+.youtube-link {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.youtube-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.youtube-link:hover {
+    opacity: 1;
+    transform: scale(1.08);
+}

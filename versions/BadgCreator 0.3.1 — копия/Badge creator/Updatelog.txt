@@ -1,0 +1,30 @@
+Version 0.1 
+
+Fixed bug with small badge name totally fucking everything up
+Added autofit for text
+Made task text bold
+Fixed battle template not showing in the progress templates (It's still inaccurate, Ill try to fix it later)
+
+Hotfix 0.1.1 
+
+Fixed autofit not working for Secret n Legacy
+Fixed update log being empty
+
+Version 0.2 
+
+Added new placeholder icon
+After clicking "export" it alerts a user that export aint working rn
+totally fucked up the "challenge", "battle", and "battle2" templates
+
+Version 0.3 - THE FONTS UPDATE ( 03/10/26)
+
+Added 6 new font, and made oswald the default one
+    -Including DOORS custom font 
+Added README, for you to read
+Added redirect to my YT cannel, cuz why not 
+
+0.3.1 - Mobile Update 
+
+- Improved mobile support (BETA)
+
+-Tysm @bread023250 (DC) for creating mobile support 

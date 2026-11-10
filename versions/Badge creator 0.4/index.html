@@ -1,0 +1,2686 @@
+<!--
+FEATURE / FUNCTION LINE GUIDE (might be outdated)
+Line numbers refer to THIS edited file. Ctrl+G to jump.
+--- PAGE STRUCTURE ---
+Main styles / CSS: line 58
+Mobile responsive styles: line 1015
+Update Log: line 1133
+Credits dialog: line 1184
+Modifiers Creator dialog: line 1197
+Template dropdown / list of outlines: line 1282
+The Hollow template option: line 1316
+Font selection / font list: line 1328
+Badge type buttons (Progress / Secret / Legacy): line 1370
+Badge name / description / task inputs: line 1388
+Badge preview HTML: line 1433
+--- MAIN JAVASCRIPT ---
+Preview scaling / resizing: line 1627
+Font selection logic: line 1648
+Base Secret / Legacy color definitions: line 1692
+Progress name gradients (progressTemplates): line 1778
+Template assets base path (TEMPLATE_PATH): line 1826
+Secret outlines list (secretOutlines): line 1828
+Secret-only options (The Hollow): line 1836
+Secret name gradients (secretNameFills): line 1845
+Outline image path resolver (outlineFor): line 1880
+Name gradient selector (nameFillFor): line 1888
+Outline image preparation (preparedOutline): line 1897
+Template dropdown rendering (buildTemplateMenu): line 1982
+Template preview update (apt): line 2094
+Template selection change: line 2124
+Download Template Outline handler: line 2135
+Icon upload handler: line 2166
+Badge name autofit (fbn): line 2191
+Description autofit (fbd): line 2216
+Task autofit (fbt): line 2254
+Badge type switching (stf): line 2314
+Export Badge handler: line 2419
+PNG download handler: line 2414
+Save PNG handler: line 2500
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0d0d">
+<title>Badge Creator</title>
+<link rel="icon" type="image/png" sizes="512x512" href="assets/Icon.png">
+<link rel="shortcut icon" type="image/png" href="assets/Icon.png">
+<link rel="apple-touch-icon" href="assets/Icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+
+<style>
+@font-face {
+    font-family: "Rblxdoorsnewfont";
+    src: url("assets/fonts/Rblxdoorsnewfont-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Yellowtail";
+    src: url("assets/fonts/Yellowtail.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Caveat";
+    src: url("assets/fonts/Caveat.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MinecraftFont";
+    src: url("assets/fonts/MinecraftFont.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0d0d0d;
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+.app {
+    width: 1100px;
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 40px 0 100px;
+}
+
+header {
+    margin-bottom: 35px;
+    padding-right: 240px;
+}
+
+header h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #888;
+    font-size: 16px;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+}
+
+.settings {
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.settings h2,
+.preview-section h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.setting {
+    margin-bottom: 22px;
+}
+
+.setting label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ddd;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    padding: 11px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #777;
+}
+
+textarea {
+    height: 90px;
+    resize: vertical;
+}
+
+input[type="file"] {
+    width: 100%;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.type-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.type-button {
+    flex: 1;
+    padding: 10px 5px;
+    background: #0d0d0d;
+    color: #aaa;
+    border: 1px solid #333;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.type-button:hover {
+    border-color: #666;
+    color: white;
+}
+
+.type-button.active {
+    background: #292929;
+    color: white;
+    border-color: #777;
+}
+
+#exportButton {
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+
+    background: white;
+    color: black;
+
+    border: none;
+    border-radius: 7px;
+
+    font-size: 15px;
+    font-weight: bold;
+    font-family: inherit;
+
+    cursor: pointer;
+    transition: 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#exportButton:hover {
+    background: #ddd;
+}
+
+#exportButton:active {
+    background: #bbb;
+}
+
+#exportButton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.export-status {
+    margin-top: 10px;
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.export-status:empty {
+    display: none;
+}
+
+.export-save {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #292929;
+    color: #fff;
+    border: 1px solid #777;
+    border-radius: 7px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.export-download {
+    display: block;
+    margin-top: 12px;
+    color: #ddd;
+    font-size: 14px;
+}
+
+.export-download[hidden] {
+    display: none;
+}
+
+#template[hidden],
+.template-dropdown[hidden] {
+    display: none;
+}
+
+.template-download {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.template-download:hover {
+    border-color: #999;
+}
+
+.template-download:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.template-dropdown .font-dropdown-menu {
+    max-height: 320px;
+}
+
+.template-option.font-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.template-option.font-option:hover {
+    background: #222;
+}
+
+.template-option.font-option.current,
+.template-option.font-option.current:hover {
+    color: #f5dfbd;
+    background: #2b241b;
+    box-shadow: inset 0 0 0 1px #685237;
+}
+
+.font-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.font-dropdown-button {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 16px;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.font-dropdown-button:focus {
+    border-color: #777;
+    outline: none;
+}
+
+.font-arrow {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #888;
+}
+
+.font-dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    right: 0;
+    top: calc(100% + 5px);
+
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 7px;
+
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.font-dropdown-menu.open {
+    display: block;
+}
+
+.font-option {
+    padding: 12px;
+    cursor: pointer;
+    background: #151515;
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.font-option:hover {
+    background: #222;
+}
+
+.font-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.font-option.current,
+.font-option.current:hover {
+    color: #f5dfbd;
+    background: #2b241b;
+    box-shadow: inset 0 0 0 1px #685237;
+}
+
+.selected-indicator,
+.selected-indicator:focus {
+    color: #f5dfbd;
+    background: #2b241b;
+    border-color: #685237;
+}
+
+.selected-indicator:focus-visible {
+    border-color: #e7c38a;
+}
+
+.selected-value {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Keep the selected template thumbnail inside the dropdown button. */
+#templateDropdownThumb {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    object-fit: contain;
+    max-width: none;
+}
+
+.selected-value > span:last-child {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.selected-check {
+    flex-shrink: 0;
+    color: #e7c38a;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.template-option {
+    width: 100%;
+    border: 0;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    text-align: left;
+}
+
+.template-option:focus-visible {
+    outline: 2px solid #e7c38a;
+    outline-offset: -2px;
+}
+
+.template-option-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.template-namefill-preview {
+    display: inline-block;
+    background: var(--preview-name-fill);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.template-option.font-option.template-preview-brighter {
+    background: #151515;
+}
+
+.template-option small {
+    display: block;
+    margin-top: 3px;
+    color: #999;
+    font-size: 11px;
+}
+
+.template-option.current small {
+    color: #c4b499;
+}
+
+.template-thumb {
+    position: relative;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    overflow: hidden;
+}
+
+.template-thumb img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+}
+
+.font-preview-oswald  { font-family: "Oswald", sans-serif; }
+.font-preview-arial   { font-family: Arial, sans-serif; }
+.font-preview-verdana { font-family: Verdana, sans-serif; }
+.font-preview-georgia { font-family: Georgia, serif; }
+.font-preview-impact  { font-family: Impact, sans-serif; }
+.font-preview-doors   { font-family: "Rblxdoorsnewfont", sans-serif; }
+.font-preview-fredoka { font-family: "Fredoka", sans-serif; }
+.font-preview-MinecraftFont { font-family: "MinecraftFont", sans-serif; }
+.font-preview-Caveat { font-family: "Caveat", sans-serif; }
+.font-preview-Yellowtail { font-family: "Yellowtail", sans-serif; }
+
+.page-dropdown {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.page-dropdown-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-dropdown-button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.page-dropdown-button .font-arrow {
+    font-size: 14px;
+}
+
+.page-dropdown-button:hover .font-arrow {
+    color: #fff;
+}
+
+.page-dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    left: 0;
+    top: calc(100% + 5px);
+    width: 360px;
+    padding: 8px;
+    max-width: calc(100vw - 32px);
+
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 7px;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.page-dropdown-menu.open {
+    display: block;
+}
+
+.page-menu-label {
+    padding: 8px 10px 12px;
+    color: #999;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.page-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: #eee;
+    font: inherit;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-option + .page-option { margin-top: 5px; }
+.page-option strong { display: block; font-weight: 600; }
+.page-option small { display: block; margin-top: 5px; color: #999; font-size: 12px; line-height: 1.4; }
+.page-option:hover { background: #252525; }
+.page-option:focus-visible { outline: 2px solid #e7c38a; outline-offset: -2px; }
+.page-option.current,
+.page-option.current:hover {
+    color: #f5dfbd;
+    background: #2b241b;
+    border-color: #685237;
+}
+.page-option.current small { color: #c4b499; }
+.page-selected {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    background: #e7c38a;
+    border-radius: 4px;
+    color: #2b2114;
+    font-size: 11px;
+    font-weight: 700;
+}
+.page-option.disabled { color: #777; cursor: default; }
+
+
+.confirm-dialog form {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.confirm-dialog .credits-close {
+    min-width: 88px;
+}
+
+.preview-section {
+    min-width: 0;
+}
+
+.badge-stage {
+    position: relative;
+    width: 100%;
+    height: 183px;
+    overflow: hidden;
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 680px;
+    height: 183px;
+
+    transform-origin: top left;
+
+    background: #120a08;
+    border: 1px solid #2a1a16;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    gap: 28px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+
+    font-family: var(--badge-font, "Oswald", sans-serif);
+}
+
+.badge-icon {
+    width: 150px;
+    height: 150px;
+
+    flex-shrink: 0;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-icon-border {
+    position: absolute;
+    inset: 0;
+
+    background: var(--template-border-fill, #d5c3a5);
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+}
+
+.badge-icon-inner {
+    position: absolute;
+    inset: 9px;
+
+    background: #1b100d;
+    overflow: hidden;
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge.type-secret .badge-icon-border,
+.badge.type-legacy .badge-icon-border {
+    --border-fill: var(--template-border-fill);
+
+    background: var(--border-fill);
+
+    -webkit-mask: repeating-conic-gradient(
+        from -9deg,
+        #000 0deg 23deg,
+        transparent 23deg 36deg
+    );
+
+    mask: repeating-conic-gradient(
+        from -9deg,
+        #000 0deg 23deg,
+        transparent 23deg 36deg
+    );
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+}
+
+.badge-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.badge-icon img.progress-template {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: none;
+    object-fit: contain;
+    max-width: none;
+    pointer-events: none;
+}
+
+.badge.type-progress .badge-icon-border,
+.badge.type-secret .badge-icon-border,
+.badge.type-legacy .badge-icon-border {
+    display: none;
+}
+
+.badge.type-progress img.progress-template,
+.badge.type-secret img.progress-template,
+.badge.type-legacy img.progress-template {
+    display: block;
+}
+
+#iconPlaceholder {
+    display: none;
+}
+
+.badge.type-progress .badge-content {
+    padding-top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 150px;
+
+    position: relative;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.badge-content h3 {
+    font-size: 23.5px;
+    line-height: 1;
+
+    margin-bottom: 8px;
+    padding-bottom: 3px;
+
+    font-weight: 900;
+    letter-spacing: -0.5px;
+
+    width: 99%;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    background: var(--template-name-fill, #ff6aa2);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+#badgeType {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #9f8980;
+    margin-bottom: 12px;
+}
+
+.badge.type-secret .badge-content,
+.badge.type-legacy .badge-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.badge.type-secret #badgeType {
+    width: 100%;
+    white-space: nowrap;
+    font-size: 17px;
+}
+
+.badge.type-secret .badge-content h3 {
+    font-size: 32px;
+}
+
+.badge.type-secret #badgeDescription {
+    font-size: 30px;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-secret #badgeTask {
+    font-size: 31px;
+    margin-top: auto;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-legacy #badgeType {
+    width: 100%;
+    white-space: nowrap;
+    font-size: 15px;
+}
+
+.badge.type-legacy .badge-content h3 {
+    font-size: 32px;
+}
+
+.badge.type-legacy #badgeDescription {
+    font-size: 30px;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-legacy #badgeTask {
+    font-size: 31px;
+    margin-top: auto;
+    overflow-wrap: anywhere;
+}
+
+#badgeDescription {
+    color: #d7bfb0;
+    font-size: 27px;
+    line-height: 1.15;
+    margin-bottom: 10px;
+}
+
+#badgeTask {
+    color: #f1d7be;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 600;
+}
+
+.badge.type-progress #badgeType {
+    display: none;
+}
+
+.badge.type-progress .badge-content h3 {
+    align-self: flex-start;
+    font-size: 36px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.badge.type-progress #badgeDescription {
+    font-size: 32px;
+    margin: 0;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    white-space: nowrap;
+
+    top: 50%;
+    transform: translateY(-50%);
+    overflow-wrap: anywhere;
+}
+
+.badge.type-progress #badgeTask {
+    font-size: 32px;
+    margin: 0;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    bottom: 2px;
+    overflow-wrap: anywhere;
+}
+
+.credits-button,
+.credits-close {
+    min-height: 44px;
+    padding: 10px 16px;
+    background: #151515;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 7px;
+    font: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+}
+
+.credits-button:hover,
+.credits-close:hover {
+    background: #292929;
+    border-color: #777;
+}
+
+.credits-button:focus-visible,
+.credits-close:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.credits-dialog {
+    width: 420px;
+    max-width: calc(100% - 32px);
+    max-height: calc(100% - 32px);
+    margin: auto;
+    padding: 25px;
+    background: #151515;
+    color: #fff;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.credits-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.credits-dialog h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.credits-dialog p {
+    color: #ddd;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.credits-dialog form {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.update-log-dialog {
+    width: 640px;
+    overflow-y: auto;
+}
+
+.update-log-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.youtube-link {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.youtube-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.youtube-link:hover {
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+@media (max-width: 1000px) {
+
+    main {
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 26px;
+    }
+
+    .settings {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 860px) {
+
+    .app {
+        max-width: 92%;
+        padding: 26px 0 90px;
+    }
+
+    header {
+        margin-bottom: 22px;
+        padding-top: 54px;
+        padding-right: 0;
+    }
+
+    .page-actions {
+        top: 14px;
+        right: 14px;
+    }
+
+    header h1 {
+        font-size: 27px;
+    }
+
+    header p {
+        font-size: 14px;
+    }
+
+    main {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .settings {
+        padding: 18px;
+        border-radius: 10px;
+    }
+
+    .settings h2,
+    .preview-section h2 {
+        font-size: 18px;
+        margin-bottom: 18px;
+    }
+
+    .setting {
+        margin-bottom: 18px;
+    }
+
+    .type-buttons {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .type-button {
+        flex: 1 1 30%;
+        min-width: 90px;
+        padding: 12px 6px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    #exportButton {
+        padding: 15px;
+        font-size: 16px;
+    }
+
+    .youtube-link {
+        right: 14px;
+        bottom: 14px;
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .app {
+        max-width: 94%;
+        padding: 20px 0 84px;
+    }
+
+    header h1 {
+        font-size: 23px;
+    }
+
+    .settings {
+        padding: 15px;
+    }
+
+    .type-button {
+        font-size: 13px;
+        min-width: 80px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-actions">
+    <button type="button" class="credits-button" id="updateLogButton" aria-haspopup="dialog" aria-controls="updateLogDialog">Update Log</button>
+    <button type="button" class="credits-button" id="creditsButton" aria-haspopup="dialog" aria-controls="creditsDialog">Credits</button>
+</div>
+
+<dialog class="credits-dialog update-log-dialog" id="updateLogDialog" aria-labelledby="updateLogTitle">
+    <h2 id="updateLogTitle">Update Log</h2>
+    <div class="update-log-text">Version 0.1
+
+Fixed bug with small badge name totally messing everything up
+Added autofit for text
+Made task text bold
+Fixed battle template not showing in the progress templates (It's still inaccurate, Ill try to fix it later)
+
+Hotfix 0.1.1
+
+Fixed autofit not working for Secret n Legacy
+Fixed update log being empty
+
+Version 0.2
+
+Added new placeholder icon
+After clicking "export" it alerts a user that export aint working rn
+totally messed up the "challenge", "battle", and "battle2" templates
+
+Version 0.3 - THE FONTS UPDATE ( 03/10/26)
+
+Added 6 new fonts, and made oswald the default one
+    -Including DOORS custom font
+Added redirect to my YT cannel, cuz why not
+
+0.3.1 - Mobile Update
+
+- Added mobile support
+
+-Tysm bread023250 for creating mobile support
+
+0.4 - The Templates Update :fire: (09.11.2026) 
+
+      -Totally overhauled Font and Template selection UI
+      -Totally overhauled Templates, they arent now pre-made gardients, but the png instead, so its much more accurate now
+      -Added missing outlines, and fixed some existing ones
+      -Renamed the outlines
+      -You can now install the current Outline by clicking the button below Outline selection 
+      - Added export, might be buggy, but overall it works
+      -Added an icon for the website (tysm SMI51Official for creating it)
+      - Added modifier creator, you can open it upon clicking an arrow next to "Badge Creator" text (Ty daniel_genghis2026 for creating it)
+      -Added "Fredoka", "Minecraft"m "Caveat" and "Yellowtail" to the font list
+      - Added beta creator to the custom creators list (if you dk, its the badge creator but beta versions)
+      - Moved to github, previously used netlify
+
+      -0.5 is gonna be big :]
+
+0.5 Customisation update (After the sun explodes)
+        -Added herobrine 
+        -deleted herobrine forever
+
+        
+     </div>
+    <form method="dialog">
+        <button type="submit" class="credits-close" autofocus>Close</button>
+    </form>
+</dialog>
+
+<dialog class="credits-dialog" id="creditsDialog" aria-labelledby="creditsTitle" aria-describedby="creditsText">
+    <h2 id="creditsTitle">Credits:</h2>
+    <div id="creditsText">
+        <p>TegBS - Creator</p>
+        <p>bread023250 - for creating mobile support</p>
+        <p>daniel_genghis2026 - Creator of Modifiers Creator</p>
+        <p>SMI51Official - for creating icon for the website</p>
+    </div>
+    <form method="dialog">
+        <button type="submit" class="credits-close" autofocus>Close</button>
+    </form>
+</dialog>
+
+<dialog class="credits-dialog confirm-dialog" id="modifiersDialog" aria-labelledby="modifiersTitle" aria-describedby="modifiersText">
+    <h2 id="modifiersTitle">Modifiers Creator</h2>
+    <p id="modifiersText">Do you want to visit Modifiers Creator?</p>
+    <form method="dialog">
+        <button type="submit" class="credits-close" value="no" autofocus>No</button>
+        <button type="submit" class="credits-close" value="yes">Yes</button>
+    </form>
+</dialog>
+
+<dialog class="credits-dialog confirm-dialog" id="betaDialog" aria-labelledby="betaTitle" aria-describedby="betaText">
+    <h2 id="betaTitle">Beta Creator</h2>
+    <p id="betaText">Do you want to visit Beta Creator?</p>
+    <form method="dialog">
+        <button type="submit" class="credits-close" value="no" autofocus>No</button>
+        <button type="submit" class="credits-close" value="yes">Yes</button>
+    </form>
+</dialog>
+
+<dialog class="credits-dialog confirm-dialog" id="secretOutlineDialog" aria-label="Secret outline" aria-describedby="secretOutlineText">
+    <p id="secretOutlineText">There is no secret outline for this template yet</p>
+    <form method="dialog">
+        <button type="submit" class="credits-close" autofocus>OK</button>
+    </form>
+</dialog>
+
+<a
+    href="https://www.youtube.com/@TegBS"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="youtube-link"
+    aria-label="TegBS YouTube channel"
+>
+    <img src="assets/youtube.png" alt="YouTube">
+</a>
+
+<div class="app">
+
+    <header>
+        <div class="page-dropdown" id="pageDropdown">
+            <h1>
+                <button type="button" class="page-dropdown-button" id="pageDropdownButton" aria-haspopup="menu" aria-expanded="false" aria-controls="pageDropdownMenu">
+                    <span>Badge Creator</span>
+                    <span class="font-arrow" aria-hidden="true">▼</span>
+                </button>
+            </h1>
+
+            <div class="page-dropdown-menu" id="pageDropdownMenu" role="menu" aria-label="Other creators">
+                <div class="page-menu-label" role="presentation">Choose your creator</div>
+                <button type="button" class="page-option current" role="menuitem" aria-current="page" data-page="badge" tabindex="-1">
+                    <span><strong>Badge Creator</strong><small>Design custom DOORS badges</small></span>
+                    <span class="page-selected">✓ Selected</span>
+                </button>
+                <button type="button" class="page-option" role="menuitem" data-page="modifiers" tabindex="-1">
+                    <span><strong>Modifiers Creator</strong><small>Create custom game modifiers</small></span>
+                    <span aria-hidden="true">↗</span>
+                </button>
+                <button type="button" class="page-option" role="menuitem" data-page="beta" tabindex="-1">
+                    <span><strong>Beta Creator</strong><small>Create beta DOORS badges</small></span>
+                    <span aria-hidden="true">↗</span>
+                </button>
+                <div class="page-option disabled" role="presentation"><small>More creators coming soon</small></div>
+            </div>
+        </div>
+        <p>Create your own custom badge</p>
+    </header>
+
+    <main>
+
+        <section class="settings">
+
+            <h2>Settings</h2>
+
+            <div class="setting">
+                <label for="iconInput">Badge Icon</label>
+
+                <input
+                    type="file"
+                    id="iconInput"
+                    accept="image/png, image/jpeg, image/webp"
+                >
+            </div>
+
+            <div class="setting" id="templateSetting">
+                <label for="templateDropdownButton">Template</label>
+
+                <div class="font-dropdown template-dropdown" id="templateDropdown">
+                    <button type="button" class="font-dropdown-button selected-indicator" id="templateDropdownButton" aria-haspopup="listbox" aria-expanded="false" aria-controls="templateDropdownMenu">
+                        <span class="selected-value">
+                            <span class="selected-check" aria-hidden="true">✓</span>
+                            <img id="templateDropdownThumb" src="assets/templates/progress/general1.png" alt="">
+                            <span id="templateDropdownLabel">General1</span>
+                        </span>
+                        <span class="font-arrow" aria-hidden="true">▼</span>
+                    </button>
+
+                    <div class="font-dropdown-menu" id="templateDropdownMenu" role="listbox" aria-label="Templates"></div>
+                </div>
+
+                <select id="template" hidden aria-hidden="true" tabindex="-1">
+                    <option value="General1.png">General1</option>
+                    <option value="Group.png">Group</option>
+                    <option value="General2.png">General2</option>
+                    <option value="Archives.png">Archives</option>
+                    <option value="Stairwells.png">Stairwells</option>
+                    <option value="Entity1.png">Entity</option>
+                    <option value="Entity2.png">Entity (Rare)</option>
+                    <option value="Entity3.png">Entity (Very Rare)</option>
+                    <option value="Floor1.png">Floor Escape</option>
+                    <option value="Floor2.png">Subfloor Escape</option>
+                    <option value="Crucifix1.png">Crucifix</option>
+                    <option value="Crucifix2.png">Crucifix (Rare)</option>
+                    <option value="Challenge.png">Challenge</option>
+                    <option value="Dailyrun.png">Daily Run</option>
+                    <option value="Battle1.png">Battle Mode</option>
+                    <option value="Battle2.png">Battle Mode (Rare)</option>
+                    <option value="AprilFools.png">April Fools</option>
+                    <option value="CC.png">Content Creator</option>
+                    <option value="CrucifixUnused.png">Crucifix (Unused)</option>
+                    <option value="Glitch.png">Glitch</option>
+                    <option value="GlitchUnused.png">Glitch (Unused)</option>
+                    <option value="Holiday1.png">Holiday</option>
+                    <option value="Holiday2.png">Holiday (Rare)</option>
+                    <option value="Rushing.png">Rush Mode</option>
+                    <option value="TH1.png">Tower Heroes</option>
+                    <option value="TH2.png">True Tower Hero</option>
+                    <option value="TH3.png">Hotel Adventure</option>
+                    <option value="TH4.png">Void Buster</option>
+                    <option value="TheHunt.png">The Hunt</option>
+                    <option value="ToT1.png">Trick or Treat</option>
+                    <option value="ToT2.png">Trick or Treat (Rare)</option>
+                    <option value="UTG.png">UTG</option>
+                    <option value="Unused.png">Unused</option>
+                    <option value="TheHollow.png">The Hollow</option>
+                </select>
+
+                <button type="button" class="export-save template-download" id="templateDownloadButton" aria-describedby="templateDownloadStatus">
+                    Download Template Outline
+                </button>
+                <p class="export-status" id="templateDownloadStatus" role="status" aria-live="polite"></p>
+            </div>
+
+            <div class="setting">
+                <label for="fontDropdownButton">Badge Font</label>
+
+                <div class="font-dropdown" id="fontDropdown">
+                    <button type="button" class="font-dropdown-button selected-indicator" id="fontDropdownButton">
+                        <span class="selected-value">
+                            <span class="selected-check" aria-hidden="true">✓</span>
+                            <span id="fontDropdownLabel" class="font-preview-oswald">Oswald</span>
+                        </span>
+                        <span class="font-arrow">▼</span>
+                    </button>
+
+                    <div class="font-dropdown-menu" id="fontDropdownMenu">
+                        <div class="font-option current" data-font="Oswald">
+                            <span class="font-preview-oswald">Oswald</span>
+                            <span class="page-selected">✓ Selected</span>
+                        </div>
+
+                        <div class="font-option" data-font="Fredoka">
+                            <span class="font-preview-fredoka">Fredoka</span>
+                        </div>
+
+                        <div class="font-option" data-font="Arial">
+                            <span class="font-preview-arial">Arial</span>
+                        </div>
+
+                        <div class="font-option" data-font="Verdana">
+                            <span class="font-preview-verdana">Verdana</span>
+                        </div>
+
+                        <div class="font-option" data-font="Georgia">
+                            <span class="font-preview-georgia">Georgia</span>
+                        </div>
+
+                        <div class="font-option" data-font="Impact">
+                            <span class="font-preview-impact">Impact</span>
+                        </div>
+
+                        <div class="font-option" data-font="Rblxdoorsnewfont">
+                            <span class="font-preview-doors">Doors</span>
+                        </div>
+
+                        <div class="font-option" data-font="MinecraftFont">
+                            <span class="font-preview-MinecraftFont">Minecraft</span>
+                        </div>
+
+                        <div class="font-option" data-font="Caveat">
+                            <span class="font-preview-Caveat">Caveat</span>
+                        </div>
+
+                        <div class="font-option" data-font="Yellowtail">
+                            <span class="font-preview-Yellowtail">Yellowtail</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting">
+                <label>Badge Type</label>
+
+                <div class="type-buttons">
+                    <button class="type-button active" data-type="PROGRESS">
+                        Progress
+                    </button>
+
+                    <button class="type-button" data-type="SECRET">
+                        Secret
+                    </button>
+
+                    <button class="type-button" data-type="LEGACY">
+                        Legacy
+                    </button>
+                </div>
+            </div>
+
+            <div class="setting">
+                <label for="nameInput">Badge Name</label>
+
+                <input
+                    type="text"
+                    id="nameInput"
+                    placeholder="Enter badge name..."
+                    maxlength="40"
+                >
+            </div>
+
+            <div class="setting">
+                <label for="descriptionInput">Description</label>
+
+                <textarea
+                    id="descriptionInput"
+                    placeholder="Enter description..."
+                    maxlength="150"
+                ></textarea>
+            </div>
+
+            <div class="setting">
+                <label for="taskInput">Task</label>
+
+                <input
+                    type="text"
+                    id="taskInput"
+                    placeholder="Enter task..."
+                    maxlength="100"
+                >
+            </div>
+
+            <button type="button" id="exportButton" aria-describedby="exportStatus">
+                Export Badge
+            </button>
+            <p class="export-status" id="exportStatus" role="status" aria-live="polite"></p>
+            <button type="button" class="export-save" id="savePngButton" hidden>Save PNG…</button>
+            <a class="export-download" id="downloadPngLink" hidden>Download PNG to files</a>
+
+        </section>
+
+        <section class="preview-section">
+
+            <h2>Preview</h2>
+
+            <div class="badge-stage" id="badgeStage">
+
+                <div class="badge type-progress" id="badge">
+
+                    <div class="badge-icon">
+                        <div class="badge-icon-border"></div>
+                        <img class="progress-template" id="progressTemplateImage" src="assets/templates/progress/general1.png" alt="">
+
+                        <div class="badge-icon-inner">
+                            <span id="iconPlaceholder">ICON</span>
+                            <img id="badgeIcon" src="assets/default-icon.png" alt="Badge Icon">
+                        </div>
+                    </div>
+
+                    <div class="badge-content">
+
+                        <h3 id="badgeName">
+                            NAME OF BADGE
+                        </h3>
+
+                        <div id="badgeType">
+                            PROGRESS
+                        </div>
+
+                        <p id="badgeDescription">
+                            Description
+                        </p>
+
+                        <p id="badgeTask">
+                            Task
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="assets/vendor/html-to-image-1.11.13.js"></script>
+
+<script>
+// Developer toggle: set to false to disable template NameFill previews.
+const ENABLE_NAMEFILL_PREVIEW = true;
+
+(function () {
+    "use strict";
+
+    var creditsButton = document.getElementById("creditsButton");
+    var creditsDialog = document.getElementById("creditsDialog");
+
+    creditsButton.addEventListener("click", function () {
+        creditsDialog.showModal();
+    });
+
+    creditsDialog.addEventListener("close", function () {
+        creditsButton.focus();
+    });
+
+    var updateLogButton = document.getElementById("updateLogButton");
+    var updateLogDialog = document.getElementById("updateLogDialog");
+
+    updateLogButton.addEventListener("click", function () {
+        updateLogDialog.showModal();
+    });
+
+    updateLogDialog.addEventListener("close", function () {
+        updateLogButton.focus();
+    });
+})();
+
+(function () {
+    "use strict";
+
+    var pdd = document.getElementById("pageDropdown");
+    var pdb = document.getElementById("pageDropdownButton");
+    var pdm = document.getElementById("pageDropdownMenu");
+    var mdd = document.getElementById("modifiersDialog");
+    var betaDialog = document.getElementById("betaDialog");
+
+    function closePageMenu() {
+        pdm.classList.remove("open");
+        pdb.setAttribute("aria-expanded", "false");
+    }
+
+    pdb.addEventListener("click", function (evt) {
+        evt.stopPropagation();
+
+        var open = pdm.classList.toggle("open");
+        pdb.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) pdm.querySelector("button").focus();
+    });
+
+    pdb.addEventListener("keydown", function (evt) {
+        if (evt.key === "ArrowDown" || evt.key === "ArrowUp") {
+            evt.preventDefault();
+            pdm.classList.add("open");
+            pdb.setAttribute("aria-expanded", "true");
+            var options = pdm.querySelectorAll("button");
+            options[evt.key === "ArrowUp" ? options.length - 1 : 0].focus();
+        }
+    });
+
+    pdm.addEventListener("keydown", function (evt) {
+        var options = Array.from(pdm.querySelectorAll("button"));
+        var index = options.indexOf(document.activeElement);
+        if (["ArrowDown", "ArrowUp", "Home", "End"].includes(evt.key)) {
+            evt.preventDefault();
+            var next = evt.key === "Home" ? 0 : evt.key === "End" ? options.length - 1
+                : (index + (evt.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
+            options[next].focus();
+        }
+        if (evt.key === "Tab") closePageMenu();
+    });
+
+    pdd.addEventListener("focusout", function (evt) {
+        if (!pdd.contains(evt.relatedTarget)) closePageMenu();
+    });
+
+    var pageOptions = pdm.querySelectorAll(".page-option");
+
+    pageOptions.forEach(function (opt) {
+        opt.addEventListener("click", function () {
+            if (opt.classList.contains("disabled")) {
+                return;
+            }
+
+            closePageMenu();
+            pdb.focus();
+
+            if (opt.dataset.page === "modifiers") {
+                mdd.showModal();
+            } else if (opt.dataset.page === "beta") {
+                betaDialog.returnValue = "";
+                betaDialog.showModal();
+            }
+        });
+    });
+
+    document.addEventListener("click", function (evt) {
+        if (!pdd.contains(evt.target)) {
+            closePageMenu();
+        }
+    });
+
+    document.addEventListener("keydown", function (evt) {
+        if (evt.key === "Escape" && pdm.classList.contains("open")) {
+            closePageMenu();
+            pdb.focus();
+        }
+    });
+
+    betaDialog.addEventListener("close", function () {
+        if (betaDialog.returnValue === "yes") {
+            window.location.href = "https://doorsbadgecreator.github.io/betacreator/";
+            return;
+        }
+
+        pdb.focus();
+    });
+
+    mdd.addEventListener("close", function () {
+        if (mdd.returnValue === "yes") {
+            window.location.href = "https://customdoorsmodifiers.netlify.app/";
+            return;
+        }
+
+        pdb.focus();
+    });
+})();
+
+(function () {
+    "use strict";
+
+    var icn = document.getElementById("iconInput");
+    var bgi = document.getElementById("badgeIcon");
+    var icp = document.getElementById("iconPlaceholder");
+    var exb = document.getElementById("exportButton");
+
+    var nin = document.getElementById("nameInput");
+    var din = document.getElementById("descriptionInput");
+    var tin = document.getElementById("taskInput");
+
+    var bnm = document.getElementById("badgeName");
+    var bds = document.getElementById("badgeDescription");
+    var bts = document.getElementById("badgeTask");
+    var bty = document.getElementById("badgeType");
+
+    var tbn = document.querySelectorAll(".type-button");
+    var bdg = document.getElementById("badge");
+    var bgs = document.getElementById("badgeStage");
+
+    var fdd = document.getElementById("fontDropdown");
+    var fdb = document.getElementById("fontDropdownButton");
+    var fdl = document.getElementById("fontDropdownLabel");
+    var fdm = document.getElementById("fontDropdownMenu");
+
+    var tms = document.getElementById("template");
+
+    var pts = Array.from(tms.options);
+    var spt = tms.value;
+
+    var BADGE_DESIGN_WIDTH = 680;
+    var BADGE_DESIGN_HEIGHT = 183;
+
+    function ubs() {
+        var avl = bgs.clientWidth;
+        if (!avl) return;
+
+        var scl = Math.min(1, avl / BADGE_DESIGN_WIDTH);
+
+        bdg.style.transform = "scale(" + scl + ")";
+        bgs.style.height = (BADGE_DESIGN_HEIGHT * scl) + "px";
+    }
+
+    window.addEventListener("resize", ubs);
+    window.addEventListener("orientationchange", function () {
+        setTimeout(ubs, 120);
+    });
+
+    if (typeof ResizeObserver !== "undefined") {
+        new ResizeObserver(ubs).observe(bgs);
+    }
+
+    ubs();
+
+    fdb.addEventListener("click", function (evt) {
+        evt.stopPropagation();
+        fdm.classList.toggle("open");
+    });
+
+    var fop = fdm.querySelectorAll(".font-option");
+
+    fop.forEach(function (opt) {
+        opt.addEventListener("click", function () {
+            var selectedFont = opt.dataset.font;
+            var label = opt.querySelector("span").textContent;
+
+            bdg.style.setProperty("--badge-font", selectedFont);
+
+            fdl.textContent = label;
+            fdl.style.fontFamily = selectedFont;
+
+            fop.forEach(function (o) {
+                o.classList.toggle("current", o === opt);
+                var pill = o.querySelector(".page-selected");
+                if (o === opt && !pill) {
+                    pill = document.createElement("span");
+                    pill.className = "page-selected";
+                    pill.textContent = "✓ Selected";
+                    o.appendChild(pill);
+                } else if (o !== opt && pill) {
+                    pill.remove();
+                }
+            });
+
+            fdm.classList.remove("open");
+
+            fbn();
+            fbd();
+            fbt();
+        });
+    });
+
+    document.addEventListener("click", function (evt) {
+        if (!fdd.contains(evt.target)) {
+            fdm.classList.remove("open");
+        }
+    });
+
+    var nonProgressTemplates = {
+
+        general1: {
+            borderFill: "#B49A80",
+            nameFill: "#B49A80"
+        },
+
+        group: {
+            borderFill: "linear-gradient(to bottom, #F4FCA7 0%, #E2C18B 50%, #84B4F5 100%)",
+            nameFill: "linear-gradient(to bottom, #F4FCA7 0%, #E2C18B 50%, #84B4F5 100%)"
+        },
+
+        general2: {
+            borderFill: "linear-gradient(to bottom, #F4FCA7 0%, #F9CC89 50%, #FE9567 100%)",
+            nameFill: "linear-gradient(to bottom, #F4FCA7 0%, #F9CC89 50%, #FE9567 100%)"
+        },
+
+        archives: {
+            borderFill: "linear-gradient(135deg, #82FF91 0%, #8DF3D0 32%, #82B7F4 58%, #8BFF9A 82%, #B4F58F 100%)",
+
+            nameFill: "linear-gradient(135deg, #82B7F4 0%, #82B7F4 28%, #8BFF9A 28%, #8BFF9A 36%, #82B7F4 36%, #82B7F4 44%, #8BFF9A 44%, #8BFF9A 52%, #82B7F4 52%, #82B7F4 60%, #8BFF9A 60%, #8BFF9A 68%, #82B7F4 68%, #82B7F4 76%, #8BFF9A 76%, #8BFF9A 84%, #82B7F4 84%, #82B7F4 92%, #8BFF9A 92%, #8BFF9A 100%)"
+        },
+
+        stairwells: {
+            borderFill: "linear-gradient(90deg, #66676B 0%, #55565A 30%, #414246 60%, #292A2E 100%)",
+
+            nameFill: "linear-gradient(90deg, #707176 0%, #5C5D62 25%, #494A4F 50%, #37383D 75%, #27282C 100%)"
+        },
+
+        entity1: {
+            borderFill: "linear-gradient(180deg, #CF8579 0%, #C97570 48%, #C76869 100%)",
+            nameFill: "linear-gradient(180deg, #CF8579 0%, #C97570 48%, #C76869 100%)"
+        },
+
+        entity2: {
+            borderFill: "linear-gradient(to bottom, #C594C5 0%, #E57B8A 50%, #F75F62 100%)",
+            nameFill: "linear-gradient(to bottom, #C594C5 0%, #E57B8A 50%, #F75F62 100%)"
+        },
+
+        entity3: {
+            borderFill: "linear-gradient(180deg, #F58FA6 0%, #EE72B7 42%, #C45BDD 78%, #A85BE8 100%)",
+            nameFill: "linear-gradient(180deg, #F58FA6 0%, #EE72B7 42%, #C45BDD 78%, #A85BE8 100%)"
+        },
+
+        floor1: {
+            borderFill: "linear-gradient(180deg, #E9FCFF 0%, #D9F6FF 35%, #B7E7FF 70%, #82C9F7 100%)",
+            nameFill: "linear-gradient(180deg, #E8FCFF 0%, #CFEFFF 38%, #A8DBFF 72%, #7EC5F7 100%)"
+        },
+
+        floor2: {
+            borderFill: "conic-gradient(from -31deg, #FFF06A 0%, #FFF06A 16%, #F8D58A 28%, #EFA7B5 40%, #D98FD1 47%, #82B9F5 54%, #82B9F5 62%, #C596E0 72%, #E9A5B5 84%, #F8D58A 94%, #FFF06A 100%)",
+            nameFill: "linear-gradient(180deg, #FFF06A 0%, #F5D18A 32%, #E9A5B8 60%, #82B9F5 100%)"
+        },
+
+        crucifix1: {
+            borderFill: "linear-gradient(180deg, #E7CBB5 0%, #D9F0FF 24%, #8CCEFF 50%, #D9F0FF 76%, #E7CBB5 100%)",
+            nameFill: "linear-gradient(180deg, #E7CBB5 0%, #D9F0FF 24%, #8CCEFF 50%, #D9F0FF 76%, #E7CBB5 100%)"
+        },
+
+        crucifix2: {
+            borderFill: "linear-gradient(180deg, #F1E4D5 0%, #DDF5FF 18%, #9DD9FF 36%, #82B9FF 50%, #C98FE0 67%, #E8A9B8 78%, #F0C77C 90%, #F0C77C 100%)",
+            nameFill: "linear-gradient(180deg, #C8F7FF 0%, #A5DFFF 22%, #83B8F0 48%, #A99BEA 68%, #C58CE5 82%, #F09BC5 94%, #F0C36F 100%)"
+        },
+
+        challenge: {
+            borderFill: "linear-gradient(90deg, #8ED8FF 0%, #8B7CFF 20%, #F05A6A 40%, #FFE56B 58%, #63E0C0 78%, #4C9CFF 100%)",
+            nameFill: "linear-gradient(90deg, #8ED8FF 0%, #8B7CFF 20%, #F05A6A 40%, #FFE56B 58%, #63E0C0 78%, #4C9CFF 100%)"
+        },
+
+        "daily-run": {
+            borderFill: "#20F044",
+            nameFill: "#20F044"
+        },
+
+        battle: {
+            borderFill: "linear-gradient(90deg, #B9ECFF 0%, #FFFFFF 50%, #5865D9 100%)",
+            nameFill: "linear-gradient(90deg, #B9ECFF 0%, #FFFFFF 50%, #5865D9 100%)"
+        },
+
+        battle2: {
+            borderFill: "linear-gradient(90deg, #FFFFFF 0%, #B9ECFF 25%, #FFE66D 50%, #F49BCB 75%, #5865D9 100%)",
+            nameFill: "linear-gradient(90deg, #FFFFFF 0%, #B9ECFF 25%, #FFE66D 50%, #F49BCB 75%, #5865D9 100%)"
+        }
+
+    };
+
+    var progressTemplates = {
+        "General1.png": "linear-gradient(180deg, #b39e89 0%, #b49b82 5%, #b49a82 10%, #b39a82 15%, #b49a81 20%, #b49a82 25%, #b49a81 30%, #b49b81 35%, #b49a81 40%, #b49a80 45%, #b49a81 50%, #b49a82 55%, #b49a82 60%, #b49a80 65%, #b49a80 70%, #b49a81 75%, #b49a81 80%, #b49a82 85%, #b49a82 90%, #b49a81 95%, #b59b84 100%)",
+        "Group.png": "linear-gradient(180deg, #f9ffb4 0%, #f4f7a5 5%, #f4f09e 10%, #f2e99f 15%, #f2e297 20%, #f0dc8f 25%, #f0d58c 30%, #eecf88 35%, #eec983 40%, #ecc381 45%, #e3c18c 50%, #d8bf96 55%, #d0bda2 60%, #c5bbad 65%, #bbbab7 70%, #b1b8c3 75%, #a7b6cf 80%, #9db4d8 85%, #94b3e4 90%, #8ab1f0 95%, #84b2fb 100%)",
+        "General2.png": "linear-gradient(180deg, #f9ffb4 0%, #f6f9a7 5%, #f7f3a3 10%, #f6ed9f 15%, #f7e79b 20%, #f8e297 25%, #f7dc94 30%, #f8d890 35%, #f9d28c 40%, #f9cd8b 45%, #fac785 50%, #fbc283 55%, #fabd80 60%, #fcb77b 65%, #fdb177 70%, #fdac76 75%, #fda772 80%, #fca26f 85%, #fc9d6b 90%, #fe9769 95%, #fc966b 100%)",
+        "Archives.png": nonProgressTemplates.archives.nameFill,
+        "Stairwells.png": nonProgressTemplates.stairwells.nameFill,
+        "Entity1.png": "linear-gradient(180deg, #c78681 0%, #c7827a 5%, #c88078 10%, #c77f79 15%, #c87d76 20%, #c77c75 25%, #c77a75 30%, #c77973 35%, #c87873 40%, #c67772 45%, #c67672 50%, #c77470 55%, #c7746f 60%, #c6726e 65%, #c7706e 70%, #c76f6d 75%, #c66e6c 80%, #c76d6b 85%, #c66b69 90%, #c66b6a 95%, #c76c6b 100%)",
+        "Entity2.png": "linear-gradient(180deg, #c398c9 0%, #c394c1 5%, #c591bb 10%, #c88eb7 15%, #cb8bb1 20%, #cf88ad 25%, #d186a5 30%, #d583a2 35%, #d7809d 40%, #d97e97 45%, #de7b93 50%, #e0778d 55%, #e37587 60%, #e77283 65%, #e6717e 70%, #ee6d79 75%, #f06a74 80%, #f3676d 85%, #f4666a 90%, #f56364 95%, #f96363 100%)",
+        "Entity3.png": "linear-gradient(180deg, #ff9a9f 0%, #fc969f 5%, #f794a3 10%, #f491a6 15%, #f28eaa 20%, #ee8daf 25%, #eb8ab4 30%, #e889b7 35%, #e485ba 40%, #e083c0 45%, #db83c1 50%, #d97fc7 55%, #d67dcb 60%, #d47acf 65%, #d078d5 70%, #cd76d6 75%, #c874dc 80%, #c573dd 85%, #c171df 90%, #bc6fe0 95%, #bd74db 100%)",
+        "Floor1.png": "linear-gradient(180deg, #e8ffff 0%, #dffbfc 5%, #daf8fd 10%, #d6f6fe 15%, #d0f4fe 20%, #ccf1fd 25%, #c9effd 30%, #c3ecfd 35%, #bfeaff 40%, #bae6fd 45%, #b5e5fd 50%, #b3e1ff 55%, #addffe 60%, #a9dcfd 65%, #a6dafd 70%, #9fd8fc 75%, #9dd5fc 80%, #97d3fc 85%, #91d0fd 90%, #8ecdfc 95%, #90cdfb 100%)",
+        "Floor2.png": "linear-gradient(180deg, #fff57e 0%, #fbeb78 5%, #f8e37d 10%, #f5dd7e 15%, #f4d683 20%, #efcf87 25%, #ecc98c 30%, #eac290 35%, #e7bb95 40%, #e3b699 45%, #e0af9f 50%, #dda8a1 55%, #d9a3aa 60%, #d0a2bf 65%, #c7a3d3 70%, #bea3e9 75%, #b5a4f9 80%, #a9aafd 85%, #9db0fe 90%, #91b6fe 95%, #94bef7 100%)",
+        "Crucifix1.png": "linear-gradient(180deg, #f8d9c2 0%, #e4cec4 5%, #cec7d0 10%, #b9bfdb 15%, #a7bae2 20%, #a8bfe6 25%, #a9c6e9 30%, #abcced 35%, #acd2f3 40%, #aed7f4 45%, #afdef7 50%, #b1e3fc 55%, #b4e8fd 60%, #b5deed 65%, #bacfd8 70%, #bec1c3 75%, #c0b4b0 80%, #c5a69b 85%, #cca091 90%, #e3b7a1 95%, #f6d2b6 100%)",
+        "Crucifix2.png": "linear-gradient(180deg, #fbdfc3 0%, #eadec8 5%, #dae4d8 10%, #c9eae3 15%, #b8eff3 20%, #a8f3fe 25%, #a8eafe 30%, #a1e0fe 35%, #9fd6fd 40%, #9bccff 45%, #97c2fe 50%, #94b9fe 55%, #8fb0fe 60%, #a1affe 65%, #bdb2fc 70%, #d9b5fd 75%, #f1b9fb 80%, #f4c2b6 85%, #f4c977 90%, #c89e67 95%, #9d7461 100%)",
+        "Challenge.png": "linear-gradient(180deg, #74d6fd 0%, #6fb2fd 5%, #748afe 10%, #7b65fd 15%, #9063e6 20%, #a564cd 25%, #ba66b3 30%, #d2669c 35%, #df7a8c 40%, #e79a84 45%, #efb97c 50%, #f8d774 55%, #e6e97a 60%, #c1ed88 65%, #9df295 70%, #79f7a3 75%, #54fcb0 80%, #4df5c1 85%, #5de5d3 90%, #6dd4e6 95%, #82c5f5 100%)",
+        "Dailyrun.png": "linear-gradient(180deg, #3ff558 0%, #36f751 5%, #36f753 10%, #36f752 15%, #34f852 20%, #32f853 25%, #34f851 30%, #35f750 35%, #35f851 40%, #34f851 45%, #35f84f 50%, #35f851 55%, #34f850 60%, #33f950 65%, #34f750 70%, #33f851 75%, #34f751 80%, #35f750 85%, #33f951 90%, #34f851 95%, #33fa57 100%)",
+        "Battle1.png": "linear-gradient(180deg, #dfe7ff 0%, #d9e9ff 5%, #d5ecfe 10%, #d2effd 15%, #cff2fc 20%, #cdf5fd 25%, #d5f7ff 30%, #e0f9fe 35%, #e7fbff 40%, #f1fcff 45%, #f9ffff 50%, #fcf9fd 55%, #f7ecfd 60%, #f2defc 65%, #edd1fd 70%, #e8c4fd 75%, #d9b1fa 80%, #b895e6 85%, #9b7bda 90%, #7b5ecb 95%, #6049b4 100%)",
+        "Battle2.png": "linear-gradient(180deg, #e8ecff 0%, #ebeffe 5%, #f6f7fe 10%, #fcfeff 15%, #d3fefe 20%, #a7fffe 25%, #7dfefd 30%, #93fbd7 35%, #c3f4a4 40%, #f0ee6b 45%, #ffe06c 50%, #ffcb8a 55%, #feb7a6 60%, #fea4c5 65%, #f892da 70%, #de84d5 75%, #c676d1 80%, #aa69ca 85%, #925bc8 90%, #784fc0 95%, #5f43b7 100%)",
+        "AprilFools.png": "linear-gradient(180deg, #ffffff 0%, #fefaf9 5%, #fef4f3 10%, #fef0f0 15%, #feeaea 20%, #fde6e6 25%, #fee2e1 30%, #fddcdc 35%, #fdd8d7 40%, #fec0c0 45%, #ff9e9e 50%, #fe7b7b 55%, #fe6766 60%, #fe6161 65%, #fe5c5e 70%, #fe595a 75%, #fe5555 80%, #fd5051 85%, #fc4e4c 90%, #fd4747 95%, #fa4948 100%)",
+        "CC.png": "linear-gradient(180deg, #fcffb7 0%, #f4f4bc 5%, #f3eac9 10%, #f2e0d7 15%, #f2d7e4 20%, #f1cef2 25%, #f1c6fc 30%, #e8cbfc 35%, #ded1fb 40%, #d4d6fa 45%, #ccddf9 50%, #c3e2f7 55%, #b9e9f5 60%, #bbdcec 65%, #c5c8e2 70%, #cfb5d8 75%, #d6a2cc 80%, #e28dc2 85%, #ea7cb7 90%, #f169ac 95%, #f95aa0 100%)",
+        "CrucifixUnused.png": "linear-gradient(180deg, #fadbc1 0%, #e9d0c3 5%, #d7c9cc 10%, #c5c4d3 15%, #b5bddd 20%, #a7bbe4 25%, #aac6eb 30%, #acd2f3 35%, #afddf7 40%, #b2e8fe 45%, #c4e3ff 50%, #dad9ff 55%, #edd0fd 60%, #fbc5f6 65%, #f3b6d8 70%, #eea6be 75%, #e697a2 80%, #e38f8d 85%, #eca49a 90%, #f6baa7 95%, #fdd2b8 100%)",
+        "Glitch.png": "linear-gradient(180deg, #ba68c0 0%, #c56eca 5%, #d276d6 10%, #df7ee1 15%, #ed85ef 20%, #fa8dfc 25%, #f88af8 30%, #eb81f1 35%, #e277e7 40%, #d66fde 45%, #cc66d5 50%, #c25dcc 55%, #b655c2 60%, #ad4cb9 65%, #a044af 70%, #973ba9 75%, #933ba5 80%, #923ca3 85%, #923da1 90%, #923d9e 95%, #903fa0 100%)",
+        "GlitchUnused.png": "linear-gradient(180deg, #f909f4 0%, #ff01fa 5%, #fe02f9 10%, #fe02f9 15%, #fc02f9 20%, #fd02fa 25%, #fe01fa 30%, #fd02fa 35%, #fd02f9 40%, #fd03f6 45%, #fc02f9 50%, #f905f7 55%, #ffde50 60%, #fbf00c 65%, #fceb11 70%, #15ede3 75%, #0ee6fc 80%, #17ddfe 85%, #e61afa 90%, #ef10f8 95%, #ec15e3 100%)",
+        "Holiday1.png": "linear-gradient(180deg, #f9c0b4 0%, #f6c2b7 5%, #f2c4ba 10%, #efc6bd 15%, #ecc9c0 20%, #e8cbc3 25%, #e5cdc6 30%, #e2cfc9 35%, #dfd1cc 40%, #dbd3cf 45%, #d8d6d2 50%, #d5d8d5 55%, #d1dad8 60%, #cedcdb 65%, #cbdede 70%, #c8e0e1 75%, #c4e2e4 80%, #c1e5e7 85%, #bee7ea 90%, #bae9ed 95%, #b7ebf0 100%)",
+        "Holiday2.png": "linear-gradient(180deg, #e187a2 0%, #dc8ca2 5%, #d792a3 10%, #d297a3 15%, #cd9da4 20%, #c7a3a4 25%, #c2a8a5 30%, #bdaea5 35%, #b8b3a6 40%, #b3b9a6 45%, #aebea6 50%, #a8c4a7 55%, #a3caa7 60%, #9ecfa8 65%, #99d5a8 70%, #94daa9 75%, #8fe0a9 80%, #8ae5aa 85%, #84ebaa 90%, #7ff0ab 95%, #7af6ab 100%)",
+        "Rushing.png": "linear-gradient(180deg, #8599c7 0%, #7e95c8 5%, #7f92cc 10%, #7f91cd 15%, #7d8ed2 20%, #7d8dd3 25%, #808ad8 30%, #8088dd 35%, #7f87df 40%, #8085df 45%, #8083e2 50%, #8081e5 55%, #817fe8 60%, #817ced 65%, #827aec 70%, #8078f0 75%, #8176f1 80%, #8174f6 85%, #8373f5 90%, #8371f8 95%, #8570fa 100%)",
+        "TH1.png": "linear-gradient(180deg, #ffadec 0%, #fca9ea 5%, #faabed 10%, #f6adec 15%, #f5afef 20%, #f4b2f1 25%, #f1b3f1 30%, #eeb6f1 35%, #ecb8f4 40%, #ebbcf4 45%, #e6bef5 50%, #e6bff6 55%, #e4c0f6 60%, #e0c4f6 65%, #dec5f8 70%, #dcc7fb 75%, #d9cafb 80%, #d8ccfd 85%, #d5cefc 90%, #d3d1fc 95%, #dcd5ff 100%)",
+        "TH2.png": "linear-gradient(180deg, #ed826f 0%, #ee7d6a 5%, #ed7d68 10%, #ef7c66 15%, #ee7b67 20%, #ef7b66 25%, #ee7b66 30%, #ef7a66 35%, #ef7966 40%, #ef7863 45%, #ef7863 50%, #ef7762 55%, #ef7662 60%, #f07760 65%, #ee7761 70%, #ee7662 75%, #ee765f 80%, #ee755f 85%, #ec765e 90%, #ee755e 95%, #f17465 100%)",
+        "TH3.png": "linear-gradient(180deg, #ffd29a 0%, #feca8c 5%, #fdc886 10%, #fec483 15%, #fdc17e 20%, #febd77 25%, #feba71 30%, #feb86a 35%, #ffb365 40%, #fdb060 45%, #fead5c 50%, #feab57 55%, #fea752 60%, #fda34c 65%, #fda147 70%, #fd9e41 75%, #fe993d 80%, #fd9738 85%, #fe9333 90%, #fd902e 95%, #fd902f 100%)",
+        "TH4.png": "linear-gradient(180deg, #f7f7f7 0%, #efefef 5%, #e7e7e7 10%, #dfdfdf 15%, #d7d7d7 20%, #cecece 25%, #c6c6c6 30%, #bebebe 35%, #b6b6b6 40%, #adadad 45%, #a5a5a5 50%, #9d9d9d 55%, #959595 60%, #8c8c8c 65%, #848484 70%, #7c7c7c 75%, #747474 80%, #6c6c6c 85%, #636363 90%, #5b5b5b 95%, #535353 100%)",
+        "TheHunt.png": "linear-gradient(180deg, #b7c2fa 0%, #adbdfd 5%, #a7bafc 10%, #a2b6fe 15%, #9eb2fd 20%, #98aefd 25%, #93abfb 30%, #8ea7fb 35%, #89a3fc 40%, #849ffc 45%, #809cfc 50%, #7b98fc 55%, #7695fc 60%, #728ffc 65%, #6f8bf6 70%, #6b87f5 75%, #6783f2 80%, #637feb 85%, #607aeb 90%, #5b76e8 95%, #5d71de 100%)",
+        "ToT1.png": "linear-gradient(180deg, #fff1af 0%, #ffe5a5 5%, #fedca2 10%, #fed69b 15%, #fed096 20%, #fec890 25%, #ffc18b 30%, #feba85 35%, #fdb484 40%, #f8ac8d 45%, #f1a497 50%, #eb9ca1 55%, #e494ac 60%, #de8db5 65%, #d886c1 70%, #d17ec9 75%, #cb77d5 80%, #c46fde 85%, #b770d6 90%, #aa73c9 95%, #9b7cbc 100%)",
+        "ToT2.png": "linear-gradient(180deg, #ffe76d 0%, #ffd65d 5%, #fec756 10%, #feba51 15%, #ffac49 20%, #fe9f43 25%, #fe923e 30%, #fd8537 35%, #fd7834 40%, #f97141 45%, #f66c58 50%, #ef6868 55%, #ea627e 60%, #e55d90 65%, #e157a6 70%, #db52ba 75%, #d44ecd 80%, #cd49df 85%, #a945d4 90%, #8441ca 95%, #663eb9 100%)",
+        "UTG.png": "linear-gradient(180deg, #ffffff 0%, #fdfefe 5%, #fbfefe 10%, #f7fefe 15%, #f5fdff 20%, #f5feff 25%, #edfdfe 30%, #d9fbfe 35%, #c6f9fe 40%, #b3f7ff 45%, #a5f0ff 50%, #97cffe 55%, #8aadfe 60%, #8d97f7 65%, #a893d6 70%, #c58fb9 75%, #df8b9d 80%, #f0858a 85%, #f47d80 90%, #f97678 95%, #f6787a 100%)",
+        "Unused.png": "linear-gradient(180deg, #fba6a3 0%, #fba59e 5%, #fda79d 10%, #fdab9d 15%, #fdae9c 20%, #fcb09a 25%, #fdb399 30%, #fdb598 35%, #fdb995 40%, #fdbb96 45%, #fdbd94 50%, #ffc092 55%, #fdc392 60%, #fdc592 65%, #fcc88f 70%, #fdcb8a 75%, #fdcd8a 80%, #fdd08a 85%, #fdd389 90%, #ffd587 95%, #ffdc92 100%)",
+        "TheHollow.png": "linear-gradient(180deg, #cf4d5e 0%, #d04a61 5%, #c84a6b 10%, #c44974 15%, #c14a7d 20%, #b84b8e 25%, #b44b96 30%, #aa4ca2 35%, #9e4cac 40%, #974bb2 45%, #8f50bf 50%, #8956c9 55%, #8454cd 60%, #7c53d2 65%, #7551cd 70%, #7150c7 75%, #654fb8 80%, #6050b0 85%, #6157a9 90%, #585398 95%, #4b4d92 100%)",
+    };
+
+    var progressTemplateImage = document.getElementById("progressTemplateImage");
+
+    var tdd = document.getElementById("templateDropdown");
+    var tdb = document.getElementById("templateDropdownButton");
+    var tdm = document.getElementById("templateDropdownMenu");
+    var tdl = document.getElementById("templateDropdownLabel");
+    var tdt = document.getElementById("templateDropdownThumb");
+    var tdlButton = document.getElementById("templateDownloadButton");
+    var tdlStatus = document.getElementById("templateDownloadStatus");
+    var secretOutlineDialog = document.getElementById("secretOutlineDialog");
+
+    var TEMPLATE_PATH = "assets/templates/";
+
+    var secretOutlines = [
+        "aprilfools", "archives", "battle1", "battle2", "cc", "challenge",
+        "crucifix1", "crucifix2", "dailyrun", "entity2", "entity3", "floor1",
+        "floor2", "general1", "general2", "glitch", "holiday1", "holiday2",
+        "rushing", "stairwells", "th1", "th2", "th3", "th4", "thehollow", "thehunt",
+        "tot1", "tot2", "utg"
+    ];
+
+    var secretNameFills = {
+        "General1.png": nonProgressTemplates.general1.nameFill,
+        "Group.png": nonProgressTemplates.group.nameFill,
+        "General2.png": nonProgressTemplates.general2.nameFill,
+        "Archives.png": nonProgressTemplates.archives.nameFill,
+        "Stairwells.png": nonProgressTemplates.stairwells.nameFill,
+        "Entity1.png": nonProgressTemplates.entity1.nameFill,
+        "Entity2.png": nonProgressTemplates.entity2.nameFill,
+        "Entity3.png": nonProgressTemplates.entity3.nameFill,
+        "Floor1.png": nonProgressTemplates.floor1.nameFill,
+        "Floor2.png": nonProgressTemplates.floor2.nameFill,
+        "Crucifix1.png": nonProgressTemplates.crucifix1.nameFill,
+        "Crucifix2.png": nonProgressTemplates.crucifix2.nameFill,
+        "Challenge.png": progressTemplates["Challenge.png"],
+        "Dailyrun.png": nonProgressTemplates["daily-run"].nameFill,
+        "Battle1.png": progressTemplates["Battle1.png"],
+        "Battle2.png": progressTemplates["Battle2.png"],
+        // Sampled from assets/templates/secret/*.png
+        "Holiday1.png": "linear-gradient(180deg, #e9b4b2 0%, #eebab7 5%, #edc3bb 10%, #f0cbc0 15%, #f3d6c5 20%, #f3e1cc 25%, #f5e8cf 30%, #f5efd3 35%, #eff0d8 40%, #ecf1dd 45%, #e5f1e2 50%, #d8ece5 55%, #d3eae7 60%, #cae8ec 65%, #c5e6ef 70%, #c4e4ee 75%, #bfe4ef 80%, #bfe6ef 85%, #bfe7e9 90%, #c1ebde 95%, #c2edcf 100%)",
+        "Holiday2.png": "linear-gradient(180deg, #f2e0e2 0%, #edc6d0 5%, #e7b8c6 10%, #e6b8c8 15%, #e5bbcb 20%, #e9cbdd 25%, #e8c8e0 30%, #e7c6e3 35%, #e4cfe8 40%, #e4d9ef 45%, #e0e2f4 50%, #d1e4ee 55%, #cce9ec 60%, #b6ede2 65%, #a7efd8 70%, #a0f0d2 75%, #9bf2cc 80%, #a2f4cb 85%, #b6f4ce 90%, #ccf4d9 95%, #c6f5ca 100%)",
+        "TheHollow.png": "linear-gradient(180deg, #cf4d5e 0%, #d04a61 5%, #c84a6b 10%, #c44974 15%, #c14a7d 20%, #b84b8e 25%, #b44b96 30%, #aa4ca2 35%, #9e4cac 40%, #974bb2 45%, #8f50bf 50%, #8956c9 55%, #8454cd 60%, #7c53d2 65%, #7551cd 70%, #7150c7 75%, #654fb8 80%, #6050b0 85%, #6157a9 90%, #585398 95%, #4b4d92 100%)"
+    };
+
+    function isSecretType() {
+        return !bdg.classList.contains("type-progress");
+    }
+
+    function currentTypeName() {
+        if (bdg.classList.contains("type-secret")) return "secret";
+        if (bdg.classList.contains("type-legacy")) return "legacy";
+        return "progress";
+    }
+
+    // Resolves which outline file a template uses for the current badge type.
+    // Secret/Legacy use the Secret outline when it exists, otherwise the Progress one.
+    function outlineFor(value, secretMode) {
+        var fileName = String(value || "");
+        var name = fileName.toLowerCase().replace(/\.png$/, "");
+        var lowerFileName = name + ".png";
+
+        if (secretMode && secretOutlines.indexOf(name) !== -1) {
+            return {
+                name: name,
+                kind: "secret",
+                fallback: false,
+                src: TEMPLATE_PATH + "secret/" + lowerFileName
+            };
+        }
+
+        return {
+            name: name,
+            kind: "progress",
+            fallback: !!secretMode,
+            src: TEMPLATE_PATH + "progress/" + lowerFileName
+        };
+    }
+
+    function nameFillFor(value, secretMode) {
+        if (secretMode) return secretNameFills[value] || progressTemplates[value];
+        return progressTemplates[value];
+    }
+
+    // Outlines that aren't pre-cropped squares get trimmed to their visible
+    // area and centred on a square canvas so they line up with the badge icon.
+    var outlineCache = {};
+
+    function preparedOutline(outline) {
+        if (outlineCache[outline.src]) return outlineCache[outline.src];
+
+        outlineCache[outline.src] = new Promise(function (resolve) {
+            var img = new Image();
+            img.onload = function () {
+                var w = img.naturalWidth;
+                var h = img.naturalHeight;
+                if (!w || !h || (outline.kind === "progress" && w === h)) {
+                    resolve(outline.src);
+                    return;
+                }
+                try {
+                    var sc = Math.min(1, 512 / Math.max(w, h));
+                    var sw = Math.max(1, Math.round(w * sc));
+                    var sh = Math.max(1, Math.round(h * sc));
+                    var probe = document.createElement("canvas");
+                    probe.width = sw;
+                    probe.height = sh;
+                    var pctx = probe.getContext("2d");
+                    pctx.drawImage(img, 0, 0, sw, sh);
+                    var px = pctx.getImageData(0, 0, sw, sh).data;
+                    var x0 = sw, y0 = sh, x1 = -1, y1 = -1;
+                    for (var y = 0; y < sh; y++) {
+                        for (var x = 0; x < sw; x++) {
+                            if (px[(y * sw + x) * 4 + 3] > 20) {
+                                if (x < x0) x0 = x;
+                                if (x > x1) x1 = x;
+                                if (y < y0) y0 = y;
+                                if (y > y1) y1 = y;
+                            }
+                        }
+                    }
+                    if (x1 < 0) {
+                        resolve(outline.src);
+                        return;
+                    }
+                    var bx = Math.max(0, x0 / sc - 1);
+                    var by = Math.max(0, y0 / sc - 1);
+                    var bw = Math.min(w, (x1 + 1) / sc + 1) - bx;
+                    var bh = Math.min(h, (y1 + 1) / sc + 1) - by;
+                    var side = Math.max(bw, bh);
+                    var size = Math.min(1024, Math.ceil(side));
+                    var k = size / side;
+                    var out = document.createElement("canvas");
+                    out.width = size;
+                    out.height = size;
+                    var octx = out.getContext("2d");
+                    octx.imageSmoothingQuality = "high";
+                    octx.drawImage(
+                        img, bx, by, bw, bh,
+                        (size - bw * k) / 2, (size - bh * k) / 2, bw * k, bh * k
+                    );
+                    resolve(out.toDataURL("image/png"));
+                } catch (error) {
+                    resolve(outline.src);
+                }
+            };
+            img.onerror = function () {
+                resolve(outline.src);
+            };
+            img.src = outline.src;
+        });
+
+        return outlineCache[outline.src];
+    }
+
+    var applyToken = 0;
+    var outlineReady = Promise.resolve();
+
+    function showSecretFallbackNotice() {
+        if (!secretOutlineDialog) return;
+        if (secretOutlineDialog.open) return;
+        if (typeof secretOutlineDialog.showModal === "function") {
+            secretOutlineDialog.showModal();
+        } else {
+            window.alert("There is no secret outline for this template yet");
+        }
+    }
+
+    function selectedOptionLabel() {
+        var opt = tms.options[tms.selectedIndex];
+        return opt ? opt.textContent : tms.value;
+    }
+
+    function buildTemplateMenu() {
+        var secretMode = isSecretType();
+        tdm.innerHTML = "";
+
+        Array.from(tms.options).forEach(function (opt) {
+            var outline = outlineFor(opt.value, secretMode);
+            var isCurrent = opt.value === tms.value;
+
+            var item = document.createElement("button");
+            item.type = "button";
+            item.className = "font-option template-option" + (isCurrent ? " current" : "");
+            item.setAttribute("role", "option");
+            item.setAttribute("aria-selected", isCurrent ? "true" : "false");
+            item.dataset.value = opt.value;
+
+            var nameWrap = document.createElement("span");
+            nameWrap.className = "template-option-name";
+
+            var thumb = document.createElement("span");
+            thumb.className = "template-thumb";
+            var timg = document.createElement("img");
+            timg.alt = "";
+            timg.loading = "lazy";
+            timg.decoding = "async";
+            timg.src = outline.src;
+            thumb.appendChild(timg);
+
+            var text = document.createElement("span");
+            if (ENABLE_NAMEFILL_PREVIEW) {
+                var namePreview = document.createElement("span");
+                namePreview.className = "template-namefill-preview";
+                namePreview.textContent = opt.textContent;
+                namePreview.style.setProperty("--preview-name-fill", nameFillFor(opt.value, secretMode));
+                text.appendChild(namePreview);
+                if (opt.value === "TH4.png" || opt.value === "Stairwells.png") {
+                    item.classList.add("template-preview-brighter");
+                }
+            } else {
+                text.textContent = opt.textContent;
+            }
+            if (secretMode) {
+                var small = document.createElement("small");
+                small.textContent = outline.fallback ? "Progress outline (no secret outline yet)" : "Secret outline";
+                text.appendChild(small);
+            }
+
+            nameWrap.appendChild(thumb);
+            nameWrap.appendChild(text);
+            item.appendChild(nameWrap);
+
+            if (isCurrent) {
+                var pill = document.createElement("span");
+                pill.className = "page-selected";
+                pill.textContent = "✓ Selected";
+                item.appendChild(pill);
+            }
+
+            item.addEventListener("click", function () {
+                closeTemplateMenu();
+                tdb.focus();
+                if (tms.value === opt.value) return;
+                tms.value = opt.value;
+                tms.dispatchEvent(new Event("change", { bubbles: true }));
+            });
+
+            tdm.appendChild(item);
+        });
+    }
+
+    function updateTemplateIndicator(outline) {
+        tdl.textContent = selectedOptionLabel();
+        tdl.classList.toggle("template-namefill-preview", ENABLE_NAMEFILL_PREVIEW);
+        if (ENABLE_NAMEFILL_PREVIEW) {
+            tdl.style.setProperty("--preview-name-fill", nameFillFor(tms.value, isSecretType()));
+        } else {
+            tdl.style.removeProperty("--preview-name-fill");
+        }
+        tdt.src = outline.src;
+        tdb.title = outline.fallback
+            ? selectedOptionLabel() + " (Progress outline — no secret outline yet)"
+            : selectedOptionLabel();
+        buildTemplateMenu();
+    }
+
+    function openTemplateMenu() {
+        tdm.classList.add("open");
+        tdb.setAttribute("aria-expanded", "true");
+        var current = tdm.querySelector(".template-option.current");
+        if (current) current.scrollIntoView({ block: "nearest" });
+    }
+
+    function closeTemplateMenu() {
+        tdm.classList.remove("open");
+        tdb.setAttribute("aria-expanded", "false");
+    }
+
+    tdb.addEventListener("click", function (evt) {
+        evt.stopPropagation();
+        if (tdm.classList.contains("open")) {
+            closeTemplateMenu();
+        } else {
+            fdm.classList.remove("open");
+            openTemplateMenu();
+        }
+    });
+
+    tdm.addEventListener("keydown", function (evt) {
+        var items = Array.from(tdm.querySelectorAll(".template-option"));
+        var index = items.indexOf(document.activeElement);
+        if (evt.key === "ArrowDown" || evt.key === "ArrowUp") {
+            evt.preventDefault();
+            var next = evt.key === "ArrowDown" ? index + 1 : index - 1;
+            if (next < 0) next = items.length - 1;
+            if (next >= items.length) next = 0;
+            items[next].focus();
+        }
+    });
+
+    document.addEventListener("click", function (evt) {
+        if (!tdd.contains(evt.target)) closeTemplateMenu();
+    });
+
+    document.addEventListener("keydown", function (evt) {
+        if (evt.key === "Escape" && tdm.classList.contains("open")) {
+            closeTemplateMenu();
+            tdb.focus();
+        }
+    });
+
+    function apt(warnIfFallback) {
+        var secretMode = isSecretType();
+        var outline = outlineFor(tms.value, secretMode);
+        var nameFill = nameFillFor(tms.value, secretMode);
+
+        if (nameFill) {
+            document.documentElement.style.setProperty("--template-name-fill", nameFill);
+        }
+
+        var token = ++applyToken;
+        outlineReady = preparedOutline(outline).then(function (src) {
+            if (token !== applyToken) return;
+            if (progressTemplateImage.getAttribute("src") !== src) {
+                progressTemplateImage.src = src;
+            }
+        });
+
+        updateTemplateIndicator(outline);
+
+        if (warnIfFallback && outline.fallback) {
+            showSecretFallbackNotice();
+        }
+    }
+
+    function hasProgressOption(value) {
+        return pts.some(function (opt) {
+            return opt.value === value;
+        });
+    }
+
+    tms.addEventListener("change", function () {
+
+        if (hasProgressOption(tms.value)) {
+            spt = tms.value;
+        }
+
+        apt(true);
+    });
+
+    apt(false);
+
+    tdlButton.addEventListener("click", async function () {
+        var outline = outlineFor(tms.value, isSecretType());
+        var filename = outline.name + "-" + (outline.fallback ? currentTypeName() + "-progress-fallback" : outline.kind) + "-outline.png";
+
+        tdlButton.disabled = true;
+        tdlStatus.textContent = "Preparing outline…";
+
+        try {
+            var response = await fetch(outline.src);
+            if (!response.ok) throw new Error("fetch-failed");
+            var blob = await response.blob();
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(function () {
+                URL.revokeObjectURL(url);
+            }, 60000);
+            tdlStatus.textContent = outline.fallback
+                ? "Downloaded the Progress outline (there is no secret outline for this template yet)."
+                : "Outline download started.";
+        } catch (error) {
+            tdlStatus.textContent = "Could not download the outline. Please try again.";
+        } finally {
+            tdlButton.disabled = false;
+        }
+    });
+
+    icn.addEventListener("change", function () {
+
+        var file = this.files[0];
+
+        if (!file) return;
+
+        var imageURL = URL.createObjectURL(file);
+
+        bgi.src = imageURL;
+        bgi.style.display = "block";
+
+        icp.style.display = "none";
+    });
+
+    nin.addEventListener("input", function () {
+
+        if (this.value.trim() === "") {
+            bnm.textContent = "NAME OF BADGE";
+        } else {
+            bnm.textContent = this.value;
+        }
+
+        fbn();
+    });
+
+    function fbn() {
+        var ttl = bnm;
+        if (!ttl) return;
+
+        var mxs = bdg.classList.contains("type-progress") ? 36 : 32;
+        var mns = 14;
+
+        var sze = mxs;
+
+        ttl.style.fontSize = sze + "px";
+        ttl.style.transform = "translateY(0)";
+
+        while (
+            ttl.scrollWidth > ttl.clientWidth &&
+            sze > mns
+        ) {
+            sze--;
+            ttl.style.fontSize = sze + "px";
+        }
+
+        var ofs = (mxs - sze) * 0.87;
+
+        ttl.style.transform = "translateY(" + ofs + "px)";
+    }
+
+    function fbd() {
+        var txt = bds;
+        if (!txt) return;
+
+        var isp = bdg.classList.contains("type-progress");
+        var mxs = 32;
+        var mns = 14;
+
+        var sze = mxs;
+
+        txt.style.whiteSpace = "nowrap";
+        txt.style.fontSize = sze + "px";
+
+        while (
+            txt.scrollWidth > txt.clientWidth &&
+            sze > mns
+        ) {
+            sze--;
+            txt.style.fontSize = sze + "px";
+        }
+
+        if (sze === mns && txt.scrollWidth > txt.clientWidth) {
+            txt.style.whiteSpace = "normal";
+        }
+
+        var ofs = (mxs - sze) * 0.1;
+
+        if (isp) {
+            txt.style.transform = "";
+            txt.style.bottom = "";
+            txt.style.top = "calc(50% + " + ofs + "px)";
+        } else {
+            txt.style.top = "";
+            txt.style.bottom = "";
+            txt.style.transform = "translateY(-" + ofs + "px)";
+        }
+    }
+
+    function fbt() {
+        var txt = bts;
+        if (!txt) return;
+
+        var isp = bdg.classList.contains("type-progress");
+        var mxs = 32;
+        var mns = 14;
+
+        var sze = mxs;
+
+        txt.style.whiteSpace = "nowrap";
+        txt.style.fontSize = sze + "px";
+
+        while (
+            txt.scrollWidth > txt.clientWidth &&
+            sze > mns
+        ) {
+            sze--;
+            txt.style.fontSize = sze + "px";
+        }
+
+        if (sze === mns && txt.scrollWidth > txt.clientWidth) {
+            txt.style.whiteSpace = "normal";
+        }
+
+        var ofs = (mxs - sze) * 0.3;
+
+        if (isp) {
+            txt.style.transform = "";
+            txt.style.top = "";
+            txt.style.bottom = "calc(2px + " + ofs + "px)";
+        } else {
+            txt.style.top = "";
+            txt.style.bottom = "";
+            txt.style.transform = "translateY(-" + ofs + "px)";
+        }
+    }
+
+    din.addEventListener("input", function () {
+
+        if (this.value.trim() === "") {
+            bds.textContent = "Description";
+        } else {
+            bds.textContent = this.value;
+        }
+
+        fbd();
+    });
+
+    tin.addEventListener("input", function () {
+
+        if (this.value.trim() === "") {
+            bts.textContent = "Task";
+        } else {
+            bts.textContent = this.value;
+        }
+
+        fbt();
+    });
+
+    function stf(typ) {
+
+        var current = tms.value;
+
+        tms.innerHTML = "";
+
+        pts.forEach(function (opt) {
+            tms.appendChild(opt);
+        });
+
+        var available = Array.from(tms.options).some(function (opt) {
+            return opt.value === current;
+        });
+
+        tms.value = available ? current : spt;
+
+        apt(typ !== "PROGRESS");
+    }
+
+    tbn.forEach(function (btn) {
+
+        btn.addEventListener("click", function () {
+
+            tbn.forEach(function (b) {
+                b.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            var typ = this.dataset.type;
+
+            if (typ === "SECRET") {
+                bty.textContent = "SECRET (Doesn't count towards progression)";
+            } else if (typ === "LEGACY") {
+                bty.textContent = "LEGACY (No progression, badge no longer in use)";
+            } else {
+                bty.textContent = typ;
+            }
+
+            bdg.classList.remove(
+                "type-progress",
+                "type-legacy",
+                "type-secret"
+            );
+
+            bdg.classList.add("type-" + typ.toLowerCase());
+
+            stf(typ);
+
+            fbn();
+            fbd();
+            fbt();
+        });
+
+    });
+
+    var exportStatus = document.getElementById("exportStatus");
+    var savePngButton = document.getElementById("savePngButton");
+    var downloadPngLink = document.getElementById("downloadPngLink");
+    var preparedFile = null;
+    var downloadURL = null;
+    var previewVersion = 0;
+    var exporting = false;
+
+    function clearPreparedExport() {
+        preparedFile = null;
+        savePngButton.hidden = true;
+        downloadPngLink.hidden = true;
+        downloadPngLink.removeAttribute("href");
+        if (downloadURL) {
+            var previousURL = downloadURL;
+            window.setTimeout(function () {
+                URL.revokeObjectURL(previousURL);
+            }, 60000);
+            downloadURL = null;
+        }
+    }
+
+    var previewObserver = new MutationObserver(function () {
+        previewVersion++;
+        clearPreparedExport();
+        if (!exporting) exportStatus.textContent = "";
+    });
+    previewObserver.observe(bdg, {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
+    previewObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["style"]
+    });
+
+    function downloadPreparedExport() {
+        downloadPngLink.click();
+        exportStatus.textContent = "PNG download started. Check your browser’s downloads or Files app.";
+    }
+
+    exb.addEventListener("click", async function () {
+        if (exporting) return;
+
+        exporting = true;
+        exb.disabled = true;
+        exb.textContent = "Exporting…";
+        clearPreparedExport();
+        exportStatus.textContent = "Preparing your PNG…";
+
+        var failureMessage = "The badge could not be rendered as a PNG. Please try again.";
+        try {
+            if (typeof htmlToImage === "undefined" || typeof htmlToImage.toBlob !== "function") {
+                failureMessage = "The PNG renderer could not be loaded. Reload the page and try again.";
+                throw new Error("renderer-unavailable");
+            }
+            failureMessage = "The selected badge font could not be loaded. Try again or choose another font.";
+            await Promise.all([bnm, bds, bts, bty].map(function (text) {
+                var style = getComputedStyle(text);
+                return document.fonts.load(style.fontWeight + " " + style.fontSize + " " + style.fontFamily, text.textContent);
+            }));
+            await document.fonts.ready;
+            failureMessage = "The badge outline could not be loaded. Try selecting the template again.";
+            await outlineReady;
+            await Promise.all(Array.from(bdg.querySelectorAll("img")).map(async function (image) {
+                try {
+                    await image.decode();
+                } catch (error) {
+                    throw new Error(image === bgi ? "icon-load-failed" : "outline-load-failed");
+                }
+            }));
+            failureMessage = "The badge could not be rendered as a PNG. Please try again.";
+            fbn();
+            fbd();
+            fbt();
+            await new Promise(function (resolve) {
+                requestAnimationFrame(resolve);
+            });
+
+            var capturedVersion = previewVersion;
+            var filename = (bnm.textContent.trim()
+                .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "-")
+                .replace(/[. ]+$/g, "")
+                .slice(0, 80) || "badge") + ".png";
+            var png = await htmlToImage.toBlob(bdg, {
+                width: BADGE_DESIGN_WIDTH,
+                height: BADGE_DESIGN_HEIGHT,
+                pixelRatio: 2,
+                style: {
+                    transform: "none",
+                    position: "relative",
+                    top: "0",
+                    left: "0",
+                    boxShadow: "none"
+                }
+            });
+
+            if (capturedVersion !== previewVersion) {
+                throw new Error("preview-changed");
+            }
+            if (!png || png.size === 0) throw new Error("empty-png");
+
+            failureMessage = "Your browser could not prepare the PNG download. Please try again.";
+            downloadURL = URL.createObjectURL(png);
+            downloadPngLink.href = downloadURL;
+            downloadPngLink.download = filename;
+            downloadPngLink.hidden = false;
+
+            var file = typeof File === "function"
+                ? new File([png], filename, { type: "image/png" })
+                : null;
+            var canShareFile = false;
+            try {
+                canShareFile = file && navigator.share && navigator.canShare &&
+                    navigator.canShare({ files: [file] }) &&
+                    (navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches);
+            } catch (error) {
+                canShareFile = false;
+            }
+
+            if (canShareFile) {
+                preparedFile = file;
+                savePngButton.hidden = false;
+                exportStatus.textContent = "PNG ready. Tap Save PNG, then choose Save Image / Photos if available, or Save to Files. You can also download it below.";
+            } else {
+                failureMessage = "Your browser could not start the PNG download. Please try exporting again.";
+                downloadPreparedExport();
+            }
+        } catch (error) {
+            clearPreparedExport();
+            exportStatus.textContent = error.message === "preview-changed"
+                ? "The preview changed during export. Tap Export Badge again to save the latest version."
+                : error.message === "icon-load-failed"
+                    ? "The badge icon could not be loaded. Choose the icon again and retry."
+                    : error.message === "outline-load-failed"
+                        ? "The badge outline could not be loaded. Try selecting the template again."
+                        : error.name === "SecurityError" || error.name === "NotAllowedError"
+                            ? "Your browser blocked the PNG export. Check its download and image permissions, then try again."
+                            : failureMessage;
+        } finally {
+            exporting = false;
+            exb.disabled = false;
+            exb.textContent = "Export Badge";
+        }
+    });
+
+    savePngButton.addEventListener("click", async function () {
+        if (!preparedFile) return;
+        savePngButton.disabled = true;
+        try {
+            await navigator.share({ files: [preparedFile] });
+            exportStatus.textContent = "Save options closed. If you did not save the PNG, tap Save PNG again or download it to files.";
+        } catch (error) {
+            if (error.name === "AbortError") {
+                exportStatus.textContent = "Saving cancelled. Tap Save PNG to try again, or download it to files.";
+            } else {
+                downloadPreparedExport();
+            }
+        } finally {
+            savePngButton.disabled = false;
+        }
+    });
+
+    fbn();
+    fbd();
+    fbt();
+    ubs();
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.addEventListener("loadingdone", function () {
+            // Export loads and fits the selected font before taking its snapshot.
+            // Font embedding can finish other font loads while rendering; refitting
+            // here would mutate the live preview and invalidate that snapshot.
+            if (exporting) return;
+            fbn();
+            fbd();
+            fbt();
+            ubs();
+        });
+
+        document.fonts.ready.then(function () {
+            fbn();
+            fbd();
+            fbt();
+            ubs();
+        });
+    }
+
+})();
+</script>
+
+</body>
+</html> 
