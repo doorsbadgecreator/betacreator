@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0d0d">
+<title>Badge Creator</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+<style>
+@font-face {
+    font-family: "Rblxdoorsnewfont";
+    src: url("assets/fonts/Rblxdoorsnewfont-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0d0d0d;
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+.app {
+    width: 1100px;
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 40px 0 100px;
+}
+
+header {
+    margin-bottom: 35px;
+    padding-right: 240px;
+}
+
+header h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #888;
+    font-size: 16px;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+}
+
+.settings {
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.settings h2,
+.preview-section h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.setting {
+    margin-bottom: 22px;
+}
+
+.setting label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ddd;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    padding: 11px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #777;
+}
+
+textarea {
+    height: 90px;
+    resize: vertical;
+}
+
+input[type="file"] {
+    width: 100%;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.type-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.type-button {
+    flex: 1;
+    padding: 10px 5px;
+    background: #0d0d0d;
+    color: #aaa;
+    border: 1px solid #333;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.type-button:hover {
+    border-color: #666;
+    color: white;
+}
+
+.type-button.active {
+    background: #292929;
+    color: white;
+    border-color: #777;
+}
+
+#exportButton {
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+
+    background: white;
+    color: black;
+
+    border: none;
+    border-radius: 7px;
+
+    font-size: 15px;
+    font-weight: bold;
+    font-family: inherit;
+
+    cursor: pointer;
+    transition: 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#exportButton:hover {
+    background: #ddd;
+}
+
+#exportButton:active {
+    background: #bbb;
+}
+
+.font-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.font-dropdown-button {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 16px;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.font-dropdown-button:focus {
+    border-color: #777;
+    outline: none;
+}
+
+.font-arrow {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #888;
+}
+
+.font-dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    right: 0;
+    top: calc(100% + 5px);
+
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 7px;
+
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.font-dropdown-menu.open {
+    display: block;
+}
+
+.font-option {
+    padding: 12px;
+    cursor: pointer;
+    background: #151515;
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.font-option:hover {
+    background: #222;
+}
+
+.font-preview-oswald  { font-family: "Oswald", sans-serif; }
+.font-preview-arial   { font-family: Arial, sans-serif; }
+.font-preview-verdana { font-family: Verdana, sans-serif; }
+.font-preview-georgia { font-family: Georgia, serif; }
+.font-preview-impact  { font-family: Impact, sans-serif; }
+.font-preview-doors   { font-family: "Rblxdoorsnewfont", sans-serif; }
+
+.preview-section {
+    min-width: 0;
+}
+
+.badge-stage {
+    position: relative;
+    width: 100%;
+    height: 183px;
+    overflow: hidden;
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 680px;
+    height: 183px;
+
+    transform-origin: top left;
+
+    background: #120a08;
+    border: 1px solid #2a1a16;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    gap: 28px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+
+    font-family: var(--badge-font, "Oswald", sans-serif);
+}
+
+.badge-icon {
+    width: 150px;
+    height: 150px;
+
+    flex-shrink: 0;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-icon-border {
+    position: absolute;
+    inset: 0;
+
+    background: var(--template-border-fill, #d5c3a5);
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+}
+
+.badge-icon-inner {
+    position: absolute;
+    inset: 9px;
+
+    background: #1b100d;
+    overflow: hidden;
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge.type-secret .badge-icon-border,
+.badge.type-legacy .badge-icon-border {
+    --border-fill: var(--template-border-fill);
+
+    background: var(--border-fill);
+
+    -webkit-mask: repeating-conic-gradient(
+        from -9deg,
+        #000 0deg 23deg,
+        transparent 23deg 36deg
+    );
+
+    mask: repeating-conic-gradient(
+        from -9deg,
+        #000 0deg 23deg,
+        transparent 23deg 36deg
+    );
+
+    clip-path: polygon(
+        64.09% 2.03%,
+        87.79% 17.26%,
+        99.49% 42.88%,
+        95.48% 70.77%,
+        77.03% 92.06%,
+        50% 100%,
+        22.97% 92.06%,
+        4.52% 70.77%,
+        0.51% 42.88%,
+        12.21% 17.26%,
+        35.91% 2.03%
+    );
+}
+
+.badge-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#iconPlaceholder {
+    display: none;
+}
+
+.badge.type-progress .badge-content {
+    padding-top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 150px;
+
+    position: relative;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.badge-content h3 {
+    font-size: 23.5px;
+    line-height: 1;
+
+    margin-bottom: 8px;
+    padding-bottom: 3px;
+
+    font-weight: 900;
+    letter-spacing: -0.5px;
+
+    width: 99%;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    background: var(--template-name-fill, #ff6aa2);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+#badgeType {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #9f8980;
+    margin-bottom: 12px;
+}
+
+.badge.type-secret .badge-content,
+.badge.type-legacy .badge-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.badge.type-secret #badgeType {
+    width: 100%;
+    white-space: nowrap;
+    font-size: 17px;
+}
+
+.badge.type-secret .badge-content h3 {
+    font-size: 32px;
+}
+
+.badge.type-secret #badgeDescription {
+    font-size: 30px;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-secret #badgeTask {
+    font-size: 31px;
+    margin-top: auto;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-legacy #badgeType {
+    width: 100%;
+    white-space: nowrap;
+    font-size: 15px;
+}
+
+.badge.type-legacy .badge-content h3 {
+    font-size: 32px;
+}
+
+.badge.type-legacy #badgeDescription {
+    font-size: 30px;
+    overflow-wrap: anywhere;
+}
+
+.badge.type-legacy #badgeTask {
+    font-size: 31px;
+    margin-top: auto;
+    overflow-wrap: anywhere;
+}
+
+#badgeDescription {
+    color: #d7bfb0;
+    font-size: 27px;
+    line-height: 1.15;
+    margin-bottom: 10px;
+}
+
+#badgeTask {
+    color: #f1d7be;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 600;
+}
+
+.badge.type-progress #badgeType {
+    display: none;
+}
+
+.badge.type-progress .badge-content h3 {
+    align-self: flex-start;
+    font-size: 36px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.badge.type-progress #badgeDescription {
+    font-size: 32px;
+    margin: 0;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    white-space: nowrap;
+
+    top: 50%;
+    transform: translateY(-50%);
+    overflow-wrap: anywhere;
+}
+
+.badge.type-progress #badgeTask {
+    font-size: 32px;
+    margin: 0;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    bottom: 2px;
+    overflow-wrap: anywhere;
+}
+
+.credits-button,
+.credits-close {
+    min-height: 44px;
+    padding: 10px 16px;
+    background: #151515;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 7px;
+    font: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+}
+
+.credits-button:hover,
+.credits-close:hover {
+    background: #292929;
+    border-color: #777;
+}
+
+.credits-button:focus-visible,
+.credits-close:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.credits-dialog {
+    width: 420px;
+    max-width: calc(100% - 32px);
+    max-height: calc(100% - 32px);
+    margin: auto;
+    padding: 25px;
+    background: #151515;
+    color: #fff;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.credits-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.credits-dialog h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.credits-dialog p {
+    color: #ddd;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.credits-dialog form {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.update-log-dialog {
+    width: 640px;
+    overflow-y: auto;
+}
+
+.update-log-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.youtube-link {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.youtube-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.youtube-link:hover {
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+@media (max-width: 1000px) {
+
+    main {
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 26px;
+    }
+
+    .settings {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 860px) {
+
+    .app {
+        max-width: 92%;
+        padding: 26px 0 90px;
+    }
+
+    header {
+        margin-bottom: 22px;
+        padding-top: 54px;
+        padding-right: 0;
+    }
+
+    .page-actions {
+        top: 14px;
+        right: 14px;
+    }
+
+    header h1 {
+        font-size: 27px;
+    }
+
+    header p {
+        font-size: 14px;
+    }
+
+    main {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .settings {
+        padding: 18px;
+        border-radius: 10px;
+    }
+
+    .settings h2,
+    .preview-section h2 {
+        font-size: 18px;
+        margin-bottom: 18px;
+    }
+
+    .setting {
+        margin-bottom: 18px;
+    }
+
+    .type-buttons {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .type-button {
+        flex: 1 1 30%;
+        min-width: 90px;
+        padding: 12px 6px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    #exportButton {
+        padding: 15px;
+        font-size: 16px;
+    }
+
+    .youtube-link {
+        right: 14px;
+        bottom: 14px;
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .app {
+        max-width: 94%;
+        padding: 20px 0 84px;
+    }
+
+    header h1 {
+        font-size: 23px;
+    }
+
+    .settings {
+        padding: 15px;
+    }
+
+    .type-button {
+        font-size: 13px;
+        min-width: 80px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-actions">
+    <button type="button" class="credits-button" id="updateLogButton" aria-haspopup="dialog" aria-controls="updateLogDialog">Update Log</button>
+    <button type="button" class="credits-button" id="creditsButton" aria-haspopup="dialog" aria-controls="creditsDialog">Credits</button>
+</div>
+
+<dialog class="credits-dialog update-log-dialog" id="updateLogDialog" aria-labelledby="updateLogTitle">
+    <h2 id="updateLogTitle">Update Log</h2>
+    <div class="update-log-text">Version 0.1
+
+Fixed bug with small badge name totally fucking everything up
+Added autofit for text
+Made task text bold
+Fixed battle template not showing in the progress templates (It's still inaccurate, Ill try to fix it later)
+
+Hotfix 0.1.1
+
+Fixed autofit not working for Secret n Legacy
+Fixed update log being empty
+
+Version 0.2
+
+Added new placeholder icon
+After clicking "export" it alerts a user that export aint working rn
+totally fucked up the "challenge", "battle", and "battle2" templates
+
+Version 0.3 - THE FONTS UPDATE ( 03/10/26)
+
+Added 6 new font, and made oswald the default one
+    -Including DOORS custom font
+Added README, for you to read
+Added redirect to my YT cannel, cuz why not
+
+0.3.1 - Mobile Update
+
+- Added mobile support
+
+-Tysm @bread023250 (DC) for creating mobile support</div>
+    <form method="dialog">
+        <button type="submit" class="credits-close" autofocus>Close</button>
+    </form>
+</dialog>
+
+<dialog class="credits-dialog" id="creditsDialog" aria-labelledby="creditsTitle" aria-describedby="creditsText">
+    <h2 id="creditsTitle">Credits:</h2>
+    <div id="creditsText">
+        <p>TegBS - Creator</p>
+        <p>bread023250 - for creating mobile support</p>
+    </div>
+    <form method="dialog">
+        <button type="submit" class="credits-close" autofocus>Close</button>
+    </form>
+</dialog>
+
+<a
+    href="https://www.youtube.com/@TegBS"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="youtube-link"
+    aria-label="TegBS YouTube channel"
+>
+    <img src="assets/youtube.webp" alt="YouTube">
+</a>
+
+<div class="app">
+
+    <header>
+        <h1>Badge Creator</h1>
+        <p>Create your own custom badge</p>
+    </header>
+
+    <main>
+
+        <section class="settings">
+
+            <h2>Settings</h2>
+
+            <div class="setting">
+                <label for="iconInput">Badge Icon</label>
+
+                <input
+                    type="file"
+                    id="iconInput"
+                    accept="image/png, image/jpeg, image/webp"
+                >
+            </div>
+
+            <div class="setting" id="templateSetting">
+                <label for="template">Template</label>
+
+                <select id="template">
+                    <option value="general1">General1</option>
+                    <option value="group">Group</option>
+                    <option value="general2">General2</option>
+                    <option value="archives">Archives</option>
+                    <option value="stairwells">Stairwells</option>
+                    <option value="entity1">Entity1</option>
+                    <option value="entity2">Entity2</option>
+                    <option value="entity3">Entity3</option>
+                    <option value="floor1">Floor1</option>
+                    <option value="floor2">Floor2</option>
+                    <option value="crucifix1">Crucifix1</option>
+                    <option value="crucifix2">Crucifix2</option>
+                    <option value="challenge">Challenge</option>
+                    <option value="daily-run">Daily Run</option>
+                    <option value="battle">Battle</option>
+                    <option value="battle2">Battle2</option>
+                </select>
+            </div>
+
+            <div class="setting">
+                <label for="fontDropdownButton">Badge Font</label>
+
+                <div class="font-dropdown" id="fontDropdown">
+                    <button type="button" class="font-dropdown-button" id="fontDropdownButton">
+                        <span id="fontDropdownLabel" class="font-preview-oswald">Oswald</span>
+                        <span class="font-arrow">▼</span>
+                    </button>
+
+                    <div class="font-dropdown-menu" id="fontDropdownMenu">
+                        <div class="font-option" data-font="Oswald">
+                            <span class="font-preview-oswald">Oswald</span>
+                        </div>
+
+                        <div class="font-option" data-font="Arial">
+                            <span class="font-preview-arial">Arial</span>
+                        </div>
+
+                        <div class="font-option" data-font="Verdana">
+                            <span class="font-preview-verdana">Verdana</span>
+                        </div>
+
+                        <div class="font-option" data-font="Georgia">
+                            <span class="font-preview-georgia">Georgia</span>
+                        </div>
+
+                        <div class="font-option" data-font="Impact">
+                            <span class="font-preview-impact">Impact</span>
+                        </div>
+
+                        <div class="font-option" data-font="Rblxdoorsnewfont">
+                            <span class="font-preview-doors">Doors Font</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting">
+                <label>Badge Type</label>
+
+                <div class="type-buttons">
+                    <button class="type-button active" data-type="PROGRESS">
+                        Progress
+                    </button>
+
+                    <button class="type-button" data-type="SECRET">
+                        Secret
+                    </button>
+
+                    <button class="type-button" data-type="LEGACY">
+                        Legacy
+                    </button>
+                </div>
+            </div>
+
+            <div class="setting">
+                <label for="nameInput">Badge Name</label>
+
+                <input
+                    type="text"
+                    id="nameInput"
+                    placeholder="Enter badge name..."
+                    maxlength="40"
+                >
+            </div>
+
+            <div class="setting">
+                <label for="descriptionInput">Description</label>
+
+                <textarea
+                    id="descriptionInput"
+                    placeholder="Enter description..."
+                    maxlength="150"
+                ></textarea>
+            </div>
+
+            <div class="setting">
+                <label for="taskInput">Task</label>
+
+                <input
+                    type="text"
+                    id="taskInput"
+                    placeholder="Enter task..."
+                    maxlength="100"
+                >
+            </div>
+
+            <button id="exportButton">
+                Export Badge
+            </button>
+
+        </section>
+
+        <section class="preview-section">
+
+            <h2>Preview</h2>
+
+            <div class="badge-stage" id="badgeStage">
+
+                <div class="badge type-progress" id="badge">
+
+                    <div class="badge-icon">
+                        <div class="badge-icon-border"></div>
+
+                        <div class="badge-icon-inner">
+                            <span id="iconPlaceholder">ICON</span>
+                            <img id="badgeIcon" src="assets/default-icon.png" alt="Badge Icon">
+                        </div>
+                    </div>
+
+                    <div class="badge-content">
+
+                        <h3 id="badgeName">
+                            NAME OF BADGE
+                        </h3>
+
+                        <div id="badgeType">
+                            PROGRESS
+                        </div>
+
+                        <p id="badgeDescription">
+                            Description
+                        </p>
+
+                        <p id="badgeTask">
+                            Task
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+(function () {
+    "use strict";
+
+    var creditsButton = document.getElementById("creditsButton");
+    var creditsDialog = document.getElementById("creditsDialog");
+
+    creditsButton.addEventListener("click", function () {
+        creditsDialog.showModal();
+    });
+
+    creditsDialog.addEventListener("close", function () {
+        creditsButton.focus();
+    });
+
+    var updateLogButton = document.getElementById("updateLogButton");
+    var updateLogDialog = document.getElementById("updateLogDialog");
+
+    updateLogButton.addEventListener("click", function () {
+        updateLogDialog.showModal();
+    });
+
+    updateLogDialog.addEventListener("close", function () {
+        updateLogButton.focus();
+    });
+})();
+
+(function () {
+    "use strict";
+
+    var icn = document.getElementById("iconInput");
+    var bgi = document.getElementById("badgeIcon");
+    var icp = document.getElementById("iconPlaceholder");
+    var exb = document.getElementById("exportButton");
+
+    var nin = document.getElementById("nameInput");
+    var din = document.getElementById("descriptionInput");
+    var tin = document.getElementById("taskInput");
+
+    var bnm = document.getElementById("badgeName");
+    var bds = document.getElementById("badgeDescription");
+    var bts = document.getElementById("badgeTask");
+    var bty = document.getElementById("badgeType");
+
+    var tbn = document.querySelectorAll(".type-button");
+    var bdg = document.getElementById("badge");
+    var bgs = document.getElementById("badgeStage");
+
+    var fdd = document.getElementById("fontDropdown");
+    var fdb = document.getElementById("fontDropdownButton");
+    var fdl = document.getElementById("fontDropdownLabel");
+    var fdm = document.getElementById("fontDropdownMenu");
+
+    var tms = document.getElementById("template");
+
+    var pts = Array.from(tms.options);
+    var spt = tms.value;
+
+    var BADGE_DESIGN_WIDTH = 680;
+    var BADGE_DESIGN_HEIGHT = 183;
+
+    function ubs() {
+        var avl = bgs.clientWidth;
+        if (!avl) return;
+
+        var scl = Math.min(1, avl / BADGE_DESIGN_WIDTH);
+
+        bdg.style.transform = "scale(" + scl + ")";
+        bgs.style.height = (BADGE_DESIGN_HEIGHT * scl) + "px";
+    }
+
+    window.addEventListener("resize", ubs);
+    window.addEventListener("orientationchange", function () {
+        setTimeout(ubs, 120);
+    });
+
+    if (typeof ResizeObserver !== "undefined") {
+        new ResizeObserver(ubs).observe(bgs);
+    }
+
+    ubs();
+
+    fdb.addEventListener("click", function (evt) {
+        evt.stopPropagation();
+        fdm.classList.toggle("open");
+    });
+
+    var fop = fdm.querySelectorAll(".font-option");
+
+    fop.forEach(function (opt) {
+        opt.addEventListener("click", function () {
+            var selectedFont = opt.dataset.font;
+            var label = opt.querySelector("span").textContent;
+
+            bdg.style.setProperty("--badge-font", selectedFont);
+
+            fdl.textContent = label;
+            fdl.style.fontFamily = selectedFont;
+
+            fdm.classList.remove("open");
+
+            fbn();
+            fbd();
+            fbt();
+        });
+    });
+
+    document.addEventListener("click", function (evt) {
+        if (!fdd.contains(evt.target)) {
+            fdm.classList.remove("open");
+        }
+    });
+
+    var tpl = {
+
+        general1: {
+            borderFill: "#B49A80",
+            nameFill: "#B49A80"
+        },
+
+        group: {
+            borderFill: "linear-gradient(to bottom, #F4FCA7 0%, #E2C18B 50%, #84B4F5 100%)",
+            nameFill: "linear-gradient(to bottom, #F4FCA7 0%, #E2C18B 50%, #84B4F5 100%)"
+        },
+
+        general2: {
+            borderFill: "linear-gradient(to bottom, #F4FCA7 0%, #F9CC89 50%, #FE9567 100%)",
+            nameFill: "linear-gradient(to bottom, #F4FCA7 0%, #F9CC89 50%, #FE9567 100%)"
+        },
+
+        archives: {
+            borderFill: "linear-gradient(135deg, #82FF91 0%, #8DF3D0 32%, #82B7F4 58%, #8BFF9A 82%, #B4F58F 100%)",
+
+            nameFill: "linear-gradient(135deg, #82B7F4 0%, #82B7F4 28%, #8BFF9A 28%, #8BFF9A 36%, #82B7F4 36%, #82B7F4 44%, #8BFF9A 44%, #8BFF9A 52%, #82B7F4 52%, #82B7F4 60%, #8BFF9A 60%, #8BFF9A 68%, #82B7F4 68%, #82B7F4 76%, #8BFF9A 76%, #8BFF9A 84%, #82B7F4 84%, #82B7F4 92%, #8BFF9A 92%, #8BFF9A 100%)"
+        },
+
+        stairwells: {
+            borderFill: "linear-gradient(90deg, #66676B 0%, #55565A 30%, #414246 60%, #292A2E 100%)",
+
+            nameFill: "linear-gradient(90deg, #707176 0%, #5C5D62 25%, #494A4F 50%, #37383D 75%, #27282C 100%)"
+        },
+
+        entity1: {
+            borderFill: "linear-gradient(180deg, #CF8579 0%, #C97570 48%, #C76869 100%)",
+            nameFill: "linear-gradient(180deg, #CF8579 0%, #C97570 48%, #C76869 100%)"
+        },
+
+        entity2: {
+            borderFill: "linear-gradient(to bottom, #C594C5 0%, #E57B8A 50%, #F75F62 100%)",
+            nameFill: "linear-gradient(to bottom, #C594C5 0%, #E57B8A 50%, #F75F62 100%)"
+        },
+
+        entity3: {
+            borderFill: "linear-gradient(180deg, #F58FA6 0%, #EE72B7 42%, #C45BDD 78%, #A85BE8 100%)",
+            nameFill: "linear-gradient(180deg, #F58FA6 0%, #EE72B7 42%, #C45BDD 78%, #A85BE8 100%)"
+        },
+
+        floor1: {
+            borderFill: "linear-gradient(180deg, #E9FCFF 0%, #D9F6FF 35%, #B7E7FF 70%, #82C9F7 100%)",
+            nameFill: "linear-gradient(180deg, #E8FCFF 0%, #CFEFFF 38%, #A8DBFF 72%, #7EC5F7 100%)"
+        },
+
+        floor2: {
+            borderFill: "conic-gradient(from -31deg, #FFF06A 0%, #FFF06A 16%, #F8D58A 28%, #EFA7B5 40%, #D98FD1 47%, #82B9F5 54%, #82B9F5 62%, #C596E0 72%, #E9A5B5 84%, #F8D58A 94%, #FFF06A 100%)",
+            nameFill: "linear-gradient(180deg, #FFF06A 0%, #F5D18A 32%, #E9A5B8 60%, #82B9F5 100%)"
+        },
+
+        crucifix1: {
+            borderFill: "linear-gradient(180deg, #E7CBB5 0%, #D9F0FF 24%, #8CCEFF 50%, #D9F0FF 76%, #E7CBB5 100%)",
+            nameFill: "linear-gradient(180deg, #E7CBB5 0%, #D9F0FF 24%, #8CCEFF 50%, #D9F0FF 76%, #E7CBB5 100%)"
+        },
+
+        crucifix2: {
+            borderFill: "linear-gradient(180deg, #F1E4D5 0%, #DDF5FF 18%, #9DD9FF 36%, #82B9FF 50%, #C98FE0 67%, #E8A9B8 78%, #F0C77C 90%, #F0C77C 100%)",
+            nameFill: "linear-gradient(180deg, #C8F7FF 0%, #A5DFFF 22%, #83B8F0 48%, #A99BEA 68%, #C58CE5 82%, #F09BC5 94%, #F0C36F 100%)"
+        },
+
+        challenge: {
+            borderFill: "linear-gradient(90deg, #8ED8FF 0%, #8B7CFF 20%, #F05A6A 40%, #FFE56B 58%, #63E0C0 78%, #4C9CFF 100%)",
+            nameFill: "linear-gradient(90deg, #8ED8FF 0%, #8B7CFF 20%, #F05A6A 40%, #FFE56B 58%, #63E0C0 78%, #4C9CFF 100%)"
+        },
+
+        "daily-run": {
+            borderFill: "#20F044",
+            nameFill: "#20F044"
+        },
+
+        battle: {
+            borderFill: "linear-gradient(90deg, #B9ECFF 0%, #FFFFFF 50%, #5865D9 100%)",
+            nameFill: "linear-gradient(90deg, #B9ECFF 0%, #FFFFFF 50%, #5865D9 100%)"
+        },
+
+        battle2: {
+            borderFill: "linear-gradient(90deg, #FFFFFF 0%, #B9ECFF 25%, #FFE66D 50%, #F49BCB 75%, #5865D9 100%)",
+            nameFill: "linear-gradient(90deg, #FFFFFF 0%, #B9ECFF 25%, #FFE66D 50%, #F49BCB 75%, #5865D9 100%)"
+        }
+
+    };
+
+    var stp = {
+        secretGeneral1: tpl.general1,
+        secretGroup: tpl.group,
+        secretGeneral2: tpl.general2,
+        secretArchives: tpl.archives,
+        secretStairwells: tpl.stairwells,
+        secretEntity1: tpl.entity1,
+        secretEntity2: tpl.entity2,
+        secretEntity3: tpl.entity3,
+        secretFloor1: tpl.floor1,
+        secretFloor2: tpl.floor2,
+        secretCrucifix1: tpl.crucifix1,
+        secretCrucifix2: tpl.crucifix2,
+        secretChallenge: tpl.challenge,
+        secretDailyRun: tpl["daily-run"],
+        secretBattle: tpl.battle,
+        secretBattle2: tpl.battle2
+    };
+
+    var sto = [
+        ["secretGeneral1", "SecretGeneral1"],
+        ["secretGroup", "SecretGroup"],
+        ["secretGeneral2", "SecretGeneral2"],
+        ["secretArchives", "SecretArchives"],
+        ["secretStairwells", "SecretStairwells"],
+        ["secretEntity1", "SecretEntity1"],
+        ["secretEntity2", "SecretEntity2"],
+        ["secretEntity3", "SecretEntity3"],
+        ["secretFloor1", "SecretFloor1"],
+        ["secretFloor2", "SecretFloor2"],
+        ["secretCrucifix1", "SecretCrucifix1"],
+        ["secretCrucifix2", "SecretCrucifix2"],
+        ["secretChallenge", "SecretChallenge"],
+        ["secretDailyRun", "SecretDailyRun"],
+        ["secretBattle", "SecretBattle"],
+        ["secretBattle2", "SecretBattle2"]
+    ];
+
+    var ltp = stp;
+
+    var lto = [
+        ["secretGeneral1", "LegacyGeneral1"],
+        ["secretGroup", "LegacyGroup"],
+        ["secretGeneral2", "LegacyGeneral2"],
+        ["secretArchives", "LegacyArchives"],
+        ["secretStairwells", "LegacyStairwells"],
+        ["secretEntity1", "LegacyEntity1"],
+        ["secretEntity2", "LegacyEntity2"],
+        ["secretEntity3", "LegacyEntity3"],
+        ["secretFloor1", "LegacyFloor1"],
+        ["secretFloor2", "LegacyFloor2"],
+        ["secretCrucifix1", "LegacyCrucifix1"],
+        ["secretCrucifix2", "LegacyCrucifix2"],
+        ["secretChallenge", "LegacyChallenge"],
+        ["secretDailyRun", "LegacyDailyRun"],
+        ["secretBattle", "LegacyBattle"],
+        ["secretBattle2", "LegacyBattle2"]
+    ];
+
+    function apt() {
+
+        var stm;
+
+        if (bdg.classList.contains("type-secret")) {
+            stm = stp[tms.value];
+        } else if (bdg.classList.contains("type-legacy")) {
+            stm = ltp[tms.value];
+        } else {
+            stm = tpl[tms.value];
+        }
+
+        if (!stm) return;
+
+        document.documentElement.style.setProperty(
+            "--template-border-fill",
+            stm.borderFill
+        );
+
+        document.documentElement.style.setProperty(
+            "--template-name-fill",
+            stm.nameFill
+        );
+    }
+
+    tms.addEventListener("change", function () {
+
+        if (bdg.classList.contains("type-progress")) {
+            spt = tms.value;
+        }
+
+        apt();
+    });
+
+    apt();
+
+    icn.addEventListener("change", function () {
+
+        var file = this.files[0];
+
+        if (!file) return;
+
+        var imageURL = URL.createObjectURL(file);
+
+        bgi.src = imageURL;
+        bgi.style.display = "block";
+
+        icp.style.display = "none";
+    });
+
+    nin.addEventListener("input", function () {
+
+        if (this.value.trim() === "") {
+            bnm.textContent = "NAME OF BADGE";
+        } else {
+            bnm.textContent = this.value;
+        }
+
+        fbn();
+    });
+
+    function fbn() {
+        var ttl = bnm;
+        if (!ttl) return;
+
+        var mxs = bdg.classList.contains("type-progress") ? 36 : 32;
+        var mns = 14;
+
+        var sze = mxs;
+
+        ttl.style.fontSize = sze + "px";
+        ttl.style.transform = "translateY(0)";
+
+        while (
+            ttl.scrollWidth > ttl.clientWidth &&
+            sze > mns
+        ) {
+            sze--;
+            ttl.style.fontSize = sze + "px";
+        }
+
+        var ofs = (mxs - sze) * 0.87;
+
+        ttl.style.transform = "translateY(" + ofs + "px)";
+    }
+
+    function fbd() {
+        var txt = bds;
+        if (!txt) return;
+
+        var isp = bdg.classList.contains("type-progress");
+        var mxs = 32;
+        var mns = 14;
+
+        var sze = mxs;
+
+        txt.style.whiteSpace = "nowrap";
+        txt.style.fontSize = sze + "px";
+
+        while (
+            txt.scrollWidth > txt.clientWidth &&
+            sze > mns
+        ) {
+            sze--;
+            txt.style.fontSize = sze + "px";
+        }
+
+        if (sze === mns && txt.scrollWidth > txt.clientWidth) {
+            txt.style.whiteSpace = "normal";
+        }
+
+        var ofs = (mxs - sze) * 0.1;
+
+        if (isp) {
+            txt.style.transform = "";
+            txt.style.bottom = "";
+            txt.style.top = "calc(50% + " + ofs + "px)";
+        } else {
+            txt.style.top = "";
+            txt.style.bottom = "";
+            txt.style.transform = "translateY(-" + ofs + "px)";
+        }
+    }
+
+    function fbt() {
+        var txt = bts;
+        if (!txt) return;
+
+        var isp = bdg.classList.contains("type-progress");
+        var mxs = 32;
+        var mns = 14;
+
+        var sze = mxs;
+
+        txt.style.whiteSpace = "nowrap";
+        txt.style.fontSize = sze + "px";
+
+        while (
+            txt.scrollWidth > txt.clientWidth &&
+            sze > mns
+        ) {
+            sze--;
+            txt.style.fontSize = sze + "px";
+        }
+
+        if (sze === mns && txt.scrollWidth > txt.clientWidth) {
+            txt.style.whiteSpace = "normal";
+        }
+
+        var ofs = (mxs - sze) * 0.3;
+
+        if (isp) {
+            txt.style.transform = "";
+            txt.style.top = "";
+            txt.style.bottom = "calc(2px + " + ofs + "px)";
+        } else {
+            txt.style.top = "";
+            txt.style.bottom = "";
+            txt.style.transform = "translateY(-" + ofs + "px)";
+        }
+    }
+
+    din.addEventListener("input", function () {
+
+        if (this.value.trim() === "") {
+            bds.textContent = "Description";
+        } else {
+            bds.textContent = this.value;
+        }
+
+        fbd();
+    });
+
+    tin.addEventListener("input", function () {
+
+        if (this.value.trim() === "") {
+            bts.textContent = "Task";
+        } else {
+            bts.textContent = this.value;
+        }
+
+        fbt();
+    });
+
+    function stf(typ) {
+
+        tms.innerHTML = "";
+
+        if (typ === "SECRET") {
+
+            sto.forEach(function (pr) {
+
+                var opt = document.createElement("option");
+
+                opt.value = pr[0];
+                opt.textContent = pr[1];
+
+                tms.appendChild(opt);
+            });
+
+            tms.value = "secretGeneral1";
+
+        } else if (typ === "LEGACY") {
+
+            lto.forEach(function (pr) {
+
+                var opt = document.createElement("option");
+
+                opt.value = pr[0];
+                opt.textContent = pr[1];
+
+                tms.appendChild(opt);
+            });
+
+            tms.value = "secretGeneral1";
+
+        } else {
+
+            pts.forEach(function (opt) {
+                tms.appendChild(opt);
+            });
+
+            tms.value = spt;
+        }
+
+        apt();
+    }
+
+    tbn.forEach(function (btn) {
+
+        btn.addEventListener("click", function () {
+
+            tbn.forEach(function (b) {
+                b.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            var typ = this.dataset.type;
+
+            if (typ === "SECRET") {
+                bty.textContent = "SECRET (Doesn't count towards progression)";
+            } else if (typ === "LEGACY") {
+                bty.textContent = "LEGACY (No progression, badge no longer in use)";
+            } else {
+                bty.textContent = typ;
+            }
+
+            bdg.classList.remove(
+                "type-progress",
+                "type-legacy",
+                "type-secret"
+            );
+
+            bdg.classList.add("type-" + typ.toLowerCase());
+
+            stf(typ);
+
+            fbn();
+            fbd();
+            fbt();
+        });
+
+    });
+
+    exb.addEventListener("click", function () {
+        alert("WIP, u have to SS the badge rn");
+    });
+
+    fbn();
+    fbd();
+    fbt();
+    ubs();
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.addEventListener("loadingdone", function () {
+            fbn();
+            fbd();
+            fbt();
+            ubs();
+        });
+
+        document.fonts.ready.then(function () {
+            fbn();
+            fbd();
+            fbt();
+            ubs();
+        });
+    }
+
+})();
+</script>
+
+</body>
+</html> 

@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d0d0d">
+
+    <title>Badge Creator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <a
+        href="https://www.youtube.com/@TegBS"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="youtube-link"
+        aria-label="TegBS YouTube channel"
+    >
+        <img src="assets/youtube.png" alt="YouTube">
+    </a>
+
+    <div class="app">
+
+        <header>
+            <h1>Badge Creator</h1>
+            <p>Create your own custom badge</p>
+        </header>
+
+        <main>
+
+            <!-- SETTINGS -->
+            <section class="settings">
+
+                <h2>Settings</h2>
+
+                <!-- ICON -->
+                <div class="setting">
+                    <label for="iconInput">Badge Icon</label>
+
+                    <input
+                        type="file"
+                        id="iconInput"
+                        accept="image/png, image/jpeg, image/webp"
+                    >
+                </div>
+
+                <!-- TEMPLATE -->
+                <div class="setting" id="templateSetting">
+                    <label for="template">Template</label>
+
+                    <select id="template">
+                        <option value="general1">General1</option>
+                        <option value="general2">General2</option>
+                        <option value="group">Group</option>
+                        <option value="archives">Archives</option>
+                        <option value="stairwells">Stairwells</option>
+                        <option value="entity1">Entity1</option>
+                        <option value="entity2">Entity2</option>
+                        <option value="entity3">Entity3</option>
+                        <option value="floor1">Floor1</option>
+                        <option value="floor2">Floor2</option>
+                        <option value="crucifix1">Crucifix1</option>
+                        <option value="crucifix2">Crucifix2</option>
+                        <option value="challenge">Challenge</option>
+                        <option value="daily-run">Daily Run</option>
+                        <option value="battle">Battle1</option>
+                        <option value="battle2">Battle2</option>
+                    </select>
+                </div>
+
+                <!-- FONTS -->
+                <div class="setting">
+                    <label for="fontDropdown">Badge Font</label>
+
+                    <div class="font-dropdown" id="fontDropdown">
+
+                        <button
+                            type="button"
+                            class="font-dropdown-button"
+                            id="fontDropdownButton"
+                        >
+                            <span class="font-preview-oswald">Oswald</span>
+                            <span class="font-arrow">▼</span>
+                        </button>
+
+                        <div class="font-dropdown-menu" id="fontDropdownMenu">
+
+                            <div class="font-option" data-font="Oswald">
+                                <span class="font-preview-oswald">Oswald</span>
+                            </div>
+
+                            <div class="font-option" data-font="Arial">
+                                <span class="font-preview-arial">Arial</span>
+                            </div>
+
+                            <div class="font-option" data-font="Verdana">
+                                <span class="font-preview-verdana">Verdana</span>
+                            </div>
+
+                            <div class="font-option" data-font="Georgia">
+                                <span class="font-preview-georgia">Georgia</span>
+                            </div>
+
+                            <div class="font-option" data-font="Impact">
+                                <span class="font-preview-impact">Impact</span>
+                            </div>
+
+                            <div class="font-option" data-font="Rblxdoorsnewfont">
+                                <span class="font-preview-doors">DOORS</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TYPE -->
+                <div class="setting">
+                    <label>Badge Type</label>
+
+                    <div class="type-buttons">
+                        <button class="type-button active" data-type="PROGRESS">
+                            Progress
+                        </button>
+
+                        <button class="type-button" data-type="SECRET">
+                            Secret
+                        </button>
+
+                        <button class="type-button" data-type="LEGACY">
+                            Legacy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NAME -->
+                <div class="setting">
+                    <label for="nameInput">Badge Name</label>
+
+                    <input
+                        type="text"
+                        id="nameInput"
+                        placeholder="Enter badge name..."
+                        maxlength="40"
+                    >
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="setting">
+                    <label for="descriptionInput">Description</label>
+
+                    <textarea
+                        id="descriptionInput"
+                        placeholder="Enter description..."
+                        maxlength="150"
+                    ></textarea>
+                </div>
+
+                <!-- TASK -->
+                <div class="setting">
+                    <label for="taskInput">Task</label>
+
+                    <input
+                        type="text"
+                        id="taskInput"
+                        placeholder="Enter task..."
+                        maxlength="100"
+                    >
+                </div>
+
+                <button id="exportButton">
+                    Export Badge
+                </button>
+
+            </section>
+
+            <!-- PREVIEW -->
+            <section class="preview-section">
+
+                <h2>Preview</h2>
+
+                <!-- Responsive badge container -->
+                <div class="badge-stage" id="badgeStage">
+
+                    <div class="badge type-progress">
+
+                        <div class="badge-icon">
+                            <div class="badge-icon-border"></div>
+
+                            <div class="badge-icon-inner">
+                                <span id="iconPlaceholder">ICON</span>
+                                <img
+                                    id="badgeIcon"
+                                    src="assets/default-icon.png"
+                                    alt="Badge Icon"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="badge-content">
+
+                            <h3 id="badgeName">NAME OF BADGE</h3>
+
+                            <div id="badgeType">PROGRESS</div>
+
+                            <p id="badgeDescription">Description</p>
+
+                            <p id="badgeTask">Task</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
